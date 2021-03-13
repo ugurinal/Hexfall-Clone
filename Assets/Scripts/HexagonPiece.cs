@@ -12,7 +12,6 @@ namespace HexfallClone.Hexagon
         [SerializeField] private int _row;
         [SerializeField] private float timeToMove = 5f;
 
-        private Vector2 _originalPos;
         private Vector2 _targetPos;
         private bool _isActive = true;
 
@@ -26,7 +25,6 @@ namespace HexfallClone.Hexagon
 
         private void Awake()
         {
-            _originalPos = transform.position;
             _targetPos = transform.position;
         }
 
@@ -51,10 +49,11 @@ namespace HexfallClone.Hexagon
 
         public IEnumerator Explode()
         {
+            Debug.Log(Row + " - " + Column);
             IsActive = false;
-            yield return new WaitForSeconds(0.5f);
             transform.GetChild(1).gameObject.SetActive(true);
-            Destroy(gameObject, 0.5f);
+            yield return new WaitForSeconds(0.5f);
+            Destroy(gameObject);
         }
     }
 }
