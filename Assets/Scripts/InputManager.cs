@@ -1,27 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HexfallClone.GameController;
 
-public class InputManager : MonoBehaviour
+namespace HexfallClone.PlayerInput
 {
-    private int _hexagonLayerMask;
-
-    private void Start()
+    public class InputManager : MonoBehaviour
     {
-        _hexagonLayerMask = LayerMask.GetMask("Hexagon");
-    }
+        private int _hexagonLayerMask;
 
-    // Update is called once per frame
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        private GameManager _gameManager;
+
+        private void Start()
         {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 0, _hexagonLayerMask);
+            _gameManager = GameManager.Instance;
+            _hexagonLayerMask = LayerMask.GetMask("Hexagon");
+        }
 
-            if (hit.collider != null)
+        // Update is called once per frame
+        private void Update()
+        {
+            if (_gameManager.GameState == GameState.Idle)
             {
-                hit.transform.GetChild(0).gameObject.SetActive(true);
-                Debug.Log(hit.transform.name);
+                if (Input.GetMouseButtonUp(0))
+                {
+                    RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 0, _hexagonLayerMask);
+
+                    if (hit.collider != null)
+                    {
+                        hit.transform.GetChild(0).gameObject.SetActive(true);
+                        Debug.Log(hit.transform.name);
+                    }
+                }
             }
         }
     }

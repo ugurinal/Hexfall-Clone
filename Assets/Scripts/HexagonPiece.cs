@@ -10,7 +10,7 @@ namespace HexfallClone.Hexagon
         [SerializeField] private HexagonColor _hexagonColor;
         [SerializeField] private int _column;
         [SerializeField] private int _row;
-        [SerializeField] private float timeToMove = 0.7f;
+        [SerializeField] private float timeToMove = 5f;
 
         private Vector2 _originalPos;
         private Vector2 _targetPos;
@@ -36,14 +36,25 @@ namespace HexfallClone.Hexagon
 
         private void Update()
         {
-            if (Vector2.Distance(transform.position, _targetPos) > 0.01f)
+            if (IsActive)
             {
-                transform.position = Vector2.Lerp(transform.position, _targetPos, timeToMove * Time.deltaTime);
+                if (Vector2.Distance(transform.position, _targetPos) > 0.01f)
+                {
+                    transform.position = Vector2.Lerp(transform.position, _targetPos, timeToMove * Time.deltaTime);
+                }
+                else
+                {
+                    transform.position = _targetPos;
+                }
             }
-            else
-            {
-                transform.position = _targetPos;
-            }
+        }
+
+        public IEnumerator Explode()
+        {
+            IsActive = false;
+            yield return new WaitForSeconds(0.5f);
+            transform.GetChild(1).gameObject.SetActive(true);
+            Destroy(gameObject, 0.5f);
         }
     }
 }
