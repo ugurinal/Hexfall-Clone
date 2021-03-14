@@ -23,5 +23,6 @@ MonoBehaviour:
   - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
   HexagonWidth: 0.7
   HexagonHeight: 0.7
-  GameSpeed: 0.3
+  GameSpeed: 1.5
   SwipeSensitivity: 20
+  ScorePerHexagon: 5

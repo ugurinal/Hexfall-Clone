@@ -7,10 +7,10 @@ namespace HexfallClone.Hexagon
 {
     public class HexagonPiece : MonoBehaviour
     {
-        [SerializeField] private HexagonColor _hexagonColor;
+        [SerializeField] public HexagonColor _hexagonColor;
         [SerializeField] private int _column;
         [SerializeField] private int _row;
-        [SerializeField] private float timeToMove = 5f;
+        [SerializeField] public float timeToMove = 5f;
 
         private Vector2 _targetPos;
         private bool _isActive = true;

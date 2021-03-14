@@ -19,7 +19,7 @@ namespace HexfallClone.GameController
     {
         Filling,
         Checking,
-        Animating,
+        Exploading,
         Rotating,
         Idle
     }
@@ -62,6 +62,8 @@ namespace HexfallClone.GameController
 
         private MainUIManager _UIManager;
 
+        public bool IsPlayable;
+
         private void Awake()
         {
             MakeSingleton();
@@ -87,6 +89,8 @@ namespace HexfallClone.GameController
             _UIManager = MainUIManager.Instance;
 
             gameState = GameState.Idle;
+            Debug.Log(gameState);
+            IsPlayable = true;
 
             _matchCounter = 0;
             _score = 0;
@@ -111,7 +115,11 @@ namespace HexfallClone.GameController
 
         private IEnumerator InitGame()
         {
+            IsPlayable = false;
+
             gameState = GameState.Filling;
+            Debug.Log(gameState);
+
             CalculateStartPosition();
 
             for (int column = 0; column < _gameVariables.GridWidth; column++)
@@ -161,12 +169,12 @@ namespace HexfallClone.GameController
         {
             List<GameObject> explodedHexagones = new List<GameObject>();
             gameState = GameState.Checking;
+            Debug.Log(gameState);
+
+            IsPlayable = false;
 
             for (int column = 0; column < _gameVariables.GridWidth; column++)
             {
-                //if (matchFound)
-                //    break;
-
                 for (int row = 0; row < _gameVariables.GridHeight; row++)
                 {
                     //int left = column - 1;
@@ -259,11 +267,19 @@ namespace HexfallClone.GameController
             if (matchFound)
             {
                 StartCoroutine(ExplodeMatches(explodedHexagones));
+                IsPlayable = false;
+
                 return true;
             }
             else
             {
+                Debug.Log("IN ELSE");
+
                 gameState = GameState.Idle;
+                Debug.Log(gameState);
+
+                // IsPlayable = true;
+
                 return false;
             }
 
@@ -274,6 +290,9 @@ namespace HexfallClone.GameController
         private void FillEmptyPlaces()
         {
             gameState = GameState.Filling;
+            Debug.Log(gameState);
+
+            IsPlayable = false;
 
             for (int column = 0; column < _gameVariables.GridWidth; column++)
             {
@@ -299,15 +318,19 @@ namespace HexfallClone.GameController
 
         private IEnumerator ExplodeMatches(List<GameObject> explodedObject)
         {
-            gameState = GameState.Animating;
+            gameState = GameState.Exploading;
+            Debug.Log(gameState);
+
+            IsPlayable = false;
+
             for (int i = 0; i < explodedObject.Count; i++)
             {
-                StartCoroutine(explodedObject[i].GetComponent<HexagonPiece>().Explode(_gameVariables.GameSpeed));
+                StartCoroutine(explodedObject[i].GetComponent<HexagonPiece>().Explode(_gameVariables.ExplosionTime));
 
                 missingHexagonCounter[explodedObject[i].GetComponent<HexagonPiece>().Column]++;
             }
 
-            yield return new WaitForSeconds(_gameVariables.GameSpeed);
+            yield return new WaitForSeconds(_gameVariables.ExplosionTime);
 
             for (int i = 0; i < explodedObject.Count; i++)
             {
@@ -336,7 +359,7 @@ namespace HexfallClone.GameController
             matchFound = false;
             FillEmptyPlaces();
 
-            yield return new WaitForSeconds(_gameVariables.GameSpeed);
+            yield return new WaitForSeconds(_gameVariables.ExplosionTime);
             CheckMatches();
         }
 

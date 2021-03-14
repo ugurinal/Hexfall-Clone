@@ -20,7 +20,7 @@ namespace HexfallClone.GameController
 
         [Header("Game")]
         [Space(7.5f)]
-        [Range(0.1f, 5f)] public float GameSpeed = 0.25f;
+        [Range(0.1f, 5f)] public float ExplosionTime = 0.25f;
         public float SwipeSensitivity = 20f;
         public int ScorePerHexagon = 5;
     }

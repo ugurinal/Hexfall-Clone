@@ -67,6 +67,7 @@ namespace HexfallClone.PlayerInput
 
                         if (CheckSwipe(startTouchPos, endTouchPos))
                         {
+                            // if nothing is selected at the beginning of game then do not execute startrotate method
                             if (!isSelected)
                                 return;
                             //Debug.Log("Starting Rotate");
@@ -75,7 +76,6 @@ namespace HexfallClone.PlayerInput
                         else
                         {
                             SelectNeighbors();
-                            //Debug.Log("Touch");
                             isSelected = true;
                         }
                     }
@@ -125,13 +125,10 @@ namespace HexfallClone.PlayerInput
                 Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
                 Vector3 mousePos = startTouchPos;
 
-                //Debug.Log(selectedObj);
-                //Debug.Log(mousePos);
-
                 int row = hit.transform.GetComponent<HexagonPiece>().Row;
                 int column = hit.transform.GetComponent<HexagonPiece>().Column;
 
-                // deselect old ones
+                // make old ones outline inactive
                 for (int i = 0; i < _neighbors.Length; i++)
                 {
                     if (_neighbors[i] != null)
@@ -146,26 +143,18 @@ namespace HexfallClone.PlayerInput
                 if (mousePos.x >= selectedObj.x && mousePos.y >= selectedObj.y)
                 {
                     side = Sides.RightTop;
-                    //Debug.Log("RIGHT TOP!");
-                    // chose top right
                 }
                 else if (mousePos.x >= selectedObj.x && mousePos.y < selectedObj.y)
                 {
                     side = Sides.RightBot;
-                    //Debug.Log("RIGHT BOT!");
-                    // chose bot right
                 }
                 else if (mousePos.x < selectedObj.x && mousePos.y >= selectedObj.y)
                 {
                     side = Sides.LeftTop;
-                    //Debug.Log("LEFT TOP!");
-                    // chose left top
                 }
                 else if (mousePos.x < selectedObj.x && mousePos.y < selectedObj.y)
                 {
                     side = Sides.LeftBot;
-                    //Debug.Log("LEFT BOT!");
-                    // chose bot left
                 }
 
                 if (column % 2 == 0)
@@ -196,7 +185,7 @@ namespace HexfallClone.PlayerInput
                     }
                     else
                     {
-                        //Debug.Log("Conditions are not met!");
+                        Debug.Log("Conditions are not met!");
                     }
                 }
                 else
@@ -227,11 +216,11 @@ namespace HexfallClone.PlayerInput
                     }
                     else
                     {
-                        //Debug.Log("Conditions are not met!");
+                        Debug.Log("Conditions are not met!");
                     }
                 }
 
-                //select new ones
+                //active new ones outline
                 for (int i = 0; i < _neighbors.Length; i++)
                 {
                     if (_neighbors[i] != null)
@@ -248,47 +237,24 @@ namespace HexfallClone.PlayerInput
             if (temp.x > 0f && temp.y < 0.5f && temp.y > -0.5f)
             {
                 _swipeDirection = SwipeDirection.Right;
-                //Debug.Log(_swipeDirection);
             }
             else if (temp.x < 0 && temp.y < 0.5f && temp.y > -0.5f)
             {
                 _swipeDirection = SwipeDirection.Left;
-                //Debug.Log(_swipeDirection);
             }
             else if (temp.y > 0f && temp.x < 0.5f && temp.x > -0.5f)
             {
                 _swipeDirection = SwipeDirection.Up;
-                //Debug.Log(_swipeDirection);
             }
             else if (temp.y < 0f && temp.x < 0.5f && temp.x > -0.5f)
             {
                 _swipeDirection = SwipeDirection.Down;
-                //Debug.Log(_swipeDirection);
             }
 
-            //Debug.Log(Mathf.Abs(Vector3.Distance(startPos, endPos)));
             return Mathf.Abs(Vector3.Distance(startPos, endPos)) > _gameVariables.SwipeSensitivity;
         }
 
         private IEnumerator StartRotate()
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                StartCoroutine(RotateHexagonGroup());
-
-                if (isMatched)
-                {
-                    _gameManager.UpdateScoreAndMove();
-                    Debug.Log("IN BREAK !!!!!");
-                    yield break;
-                }
-
-                //Debug.Log("BREAK NOT WORKS!");
-                yield return new WaitForSeconds(0.7f);
-            }
-        }
-
-        private IEnumerator RotateHexagonGroup()
         {
             for (int i = 0; i < 3; i++)
             {
@@ -299,7 +265,34 @@ namespace HexfallClone.PlayerInput
             }
 
             _gameManager.GameState = GameState.Rotating;
-            //Debug.Log("In Rotate Hexagon Group!");
+
+            for (int i = 0; i < 3; i++)
+            {
+                StartCoroutine(RotateHexagonGroup());
+
+                if (isMatched)
+                {
+                    _gameManager.UpdateScoreAndMove();
+                    _gameManager.GameState = GameState.Idle;
+                    yield break;
+                }
+                else
+                {
+                    if (i == 2)
+                    {
+                        _gameManager.GameState = GameState.Idle;
+                        Debug.Log(_gameManager.GameState);
+                    }
+                }
+
+                yield return new WaitForSeconds(0.3f);
+            }
+        }
+
+        private IEnumerator RotateHexagonGroup()
+        {
+            _gameManager.GameState = GameState.Rotating;
+
             GameObject firstHexagon = _neighbors[0];
             int firstRow = firstHexagon.GetComponent<HexagonPiece>().Row;
             int firstColumn = firstHexagon.GetComponent<HexagonPiece>().Column;
@@ -314,15 +307,10 @@ namespace HexfallClone.PlayerInput
 
             if (_swipeDirection == SwipeDirection.Right || _swipeDirection == SwipeDirection.Down)
             {
-                //Debug.Log("SWIPING!!!!!!!!");
-
                 _gameManager.Hexagones[firstColumn, firstRow] = thirdHexagon;
                 _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
                 _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
                 _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition = firstHexagon.transform.position;
-
-                //Debug.Log(_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition);
-                //Debug.Log(firstHexagon.transform.position);
 
                 _gameManager.Hexagones[secondColumn, secondRow] = firstHexagon;
                 _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Row = secondRow;
@@ -355,10 +343,18 @@ namespace HexfallClone.PlayerInput
                         _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
                     }
                 }
-            }
-            yield return new WaitForSeconds(0.7f);
 
-            _gameManager.GameState = GameState.Idle;
+                //yield return new WaitForSeconds(0.3f);
+            }
+            else
+            {
+                yield return new WaitForSeconds(0.3f);
+                _gameManager.GameState = GameState.Idle;
+                Debug.Log(_gameManager.GameState);
+            }
+
+            yield return new WaitForSeconds(0.3f);
+            //yield return new WaitForSeconds(0.6f);
         }
     }   // input manager
 }   // namepsace
