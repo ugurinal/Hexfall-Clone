@@ -34,5 +34,15 @@ namespace HexfallClone.Hexagon
                 }
             }
         }
+
+        public void DecreaseCounter()
+        {
+            _bombCounter--;
+            transform.GetChild(2).GetComponent<TextMeshPro>().text = "" + _bombCounter;
+            if (_bombCounter <= 0)
+            {
+                Debug.Log("GAME OVER!");
+            }
+        }
     }
 }

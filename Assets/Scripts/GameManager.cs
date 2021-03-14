@@ -392,6 +392,15 @@ namespace HexfallClone.GameController
             _score += _matchCounter * _gameVariables.ScorePerHexagon;
             _bombScore += _matchCounter * _gameVariables.ScorePerHexagon;
             _moveCounter++;
+
+            if (_bombs.Count > 0)
+            {
+                foreach (GameObject bomb in _bombs)
+                {
+                    bomb.GetComponent<BombHexagon>().DecreaseCounter();
+                }
+            }
+
             _matchCounter = 0;
             _UIManager.UpdateUI();
         }
