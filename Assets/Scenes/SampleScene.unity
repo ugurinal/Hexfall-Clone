@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fad4c833c46ee54787112df18aa4d73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameVariables: {fileID: 11400000, guid: 4e8c805bc5720da4093b3d97f7d522f0, type: 2}
 --- !u!1 &197432229
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,18 +394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: babe56e6f13f93d4fb3226054fdbeba7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameVariables: {fileID: 11400000, guid: 4e8c805bc5720da4093b3d97f7d522f0, type: 2}
   _hexagoneParent: {fileID: 1385659909}
-  _hexagonePrefabs:
-  - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}
-  - {fileID: 8342543395174524090, guid: 00bc16124ba8bdb43bacab1140bc4982, type: 3}
-  - {fileID: 8342543395174524090, guid: 958a0ea88aa2e28408dfd76363b08dc5, type: 3}
-  - {fileID: 8342543395174524090, guid: 747dc5c3c584fec4897d9501486ebe41, type: 3}
-  - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
-  _gridWidth: 8
-  _gridHeight: 9
-  _gridGap: 0.1
-  _hexagoneWidth: 0.7
-  _hexagoneHeight: 0.7
 --- !u!1 &1274311685
 GameObject:
   m_ObjectHideFlags: 0

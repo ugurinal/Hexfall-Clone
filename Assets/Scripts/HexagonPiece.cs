@@ -49,7 +49,7 @@ namespace HexfallClone.Hexagon
 
         public IEnumerator Explode()
         {
-            Debug.Log(Row + " - " + Column);
+            //Debug.Log(Row + " - " + Column);
             IsActive = false;
             transform.GetChild(1).gameObject.SetActive(true);
             yield return new WaitForSeconds(0.5f);
