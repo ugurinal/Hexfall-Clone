@@ -39,8 +39,13 @@ namespace HexfallClone.PlayerInput
         private Vector2 endTouchPos;
         private SwipeDirection _swipeDirection;
 
+        private bool isSelected;
+        private bool isMatched;
+
         private void Start()
         {
+            isSelected = false;
+            isMatched = false;
             _neighbors = new GameObject[3];
             _gameManager = GameManager.Instance;
             _hexagonLayerMask = LayerMask.GetMask("Hexagon");
@@ -62,12 +67,16 @@ namespace HexfallClone.PlayerInput
 
                         if (CheckSwipe(startTouchPos, endTouchPos))
                         {
-                            Debug.Log("Swipe");
+                            if (!isSelected)
+                                return;
+                            //Debug.Log("Starting Rotate");
+                            StartCoroutine(StartRotate());
                         }
                         else
                         {
                             SelectNeighbors();
-                            Debug.Log("Touch");
+                            //Debug.Log("Touch");
+                            isSelected = true;
                         }
                     }
                 }
@@ -93,6 +102,7 @@ namespace HexfallClone.PlayerInput
                                 else
                                 {
                                     SelectNeighbors();
+                                    isSelected = true;
                                     Debug.Log("Touch");
                                 }
                                 break;
@@ -258,6 +268,96 @@ namespace HexfallClone.PlayerInput
 
             //Debug.Log(Mathf.Abs(Vector3.Distance(startPos, endPos)));
             return Mathf.Abs(Vector3.Distance(startPos, endPos)) > _gameVariables.SwipeSensitivity;
+        }
+
+        private IEnumerator StartRotate()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                StartCoroutine(RotateHexagonGroup());
+
+                if (isMatched)
+                {
+                    Debug.Log("IN BREAK !!!!!");
+                    yield break;
+                }
+
+                //Debug.Log("BREAK NOT WORKS!");
+                yield return new WaitForSeconds(0.7f);
+            }
+        }
+
+        private IEnumerator RotateHexagonGroup()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (_neighbors[i] == null)
+                {
+                    yield break;
+                }
+            }
+
+            _gameManager.GameState = GameState.Rotating;
+            //Debug.Log("In Rotate Hexagon Group!");
+            GameObject firstHexagon = _neighbors[0];
+            int firstRow = firstHexagon.GetComponent<HexagonPiece>().Row;
+            int firstColumn = firstHexagon.GetComponent<HexagonPiece>().Column;
+
+            GameObject secondHexagon = _neighbors[1];
+            int secondRow = secondHexagon.GetComponent<HexagonPiece>().Row;
+            int secondColumn = secondHexagon.GetComponent<HexagonPiece>().Column;
+
+            GameObject thirdHexagon = _neighbors[2];
+            int thirdRow = thirdHexagon.GetComponent<HexagonPiece>().Row;
+            int thirdColumn = thirdHexagon.GetComponent<HexagonPiece>().Column;
+
+            if (_swipeDirection == SwipeDirection.Right || _swipeDirection == SwipeDirection.Down)
+            {
+                //Debug.Log("SWIPING!!!!!!!!");
+
+                _gameManager.Hexagones[firstColumn, firstRow] = thirdHexagon;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition = firstHexagon.transform.position;
+
+                //Debug.Log(_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition);
+                //Debug.Log(firstHexagon.transform.position);
+
+                _gameManager.Hexagones[secondColumn, secondRow] = firstHexagon;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Row = secondRow;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Column = secondColumn;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().TargetPosition = secondHexagon.transform.position;
+
+                _gameManager.Hexagones[thirdColumn, thirdRow] = secondHexagon;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Row = thirdRow;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
+
+                _neighbors[0] = thirdHexagon;
+                _neighbors[1] = firstHexagon;
+                _neighbors[2] = secondHexagon;
+
+                //clockwise rotate
+            }
+            else
+            {
+                //counterclockwise rotate
+            }
+
+            isMatched = _gameManager.CheckMatches();
+            if (isMatched)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (_neighbors[i] != null)
+                    {
+                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.7f);
+
+            _gameManager.GameState = GameState.Idle;
         }
     }   // input manager
 }   // namepsace

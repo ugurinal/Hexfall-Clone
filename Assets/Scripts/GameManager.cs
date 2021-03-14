@@ -19,6 +19,7 @@ namespace HexfallClone.GameController
         Filling,
         Checking,
         Animating,
+        Rotating,
         Idle
     }
 
@@ -53,7 +54,7 @@ namespace HexfallClone.GameController
         private Vector3 startPos;
 
         private GameState gameState;
-        public GameState GameState { get => gameState; }
+        public GameState GameState { get => gameState; set => gameState = value; }
 
         private void Awake()
         {
@@ -145,7 +146,7 @@ namespace HexfallClone.GameController
             return new Vector3(x, y, 0);
         }
 
-        private void CheckMatches()
+        public bool CheckMatches()
         {
             List<GameObject> explodedHexagones = new List<GameObject>();
             gameState = GameState.Checking;
@@ -239,10 +240,12 @@ namespace HexfallClone.GameController
             if (matchFound)
             {
                 StartCoroutine(ExplodeMatches(explodedHexagones));
+                return true;
             }
             else
             {
                 gameState = GameState.Idle;
+                return false;
             }
 
             //Debug.Log(explodedHexagones.Count);

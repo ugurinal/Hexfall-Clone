@@ -28,10 +28,6 @@ namespace HexfallClone.Hexagon
             _targetPos = transform.position;
         }
 
-        private void Start()
-        {
-        }
-
         private void Update()
         {
             if (IsActive)
@@ -49,8 +45,8 @@ namespace HexfallClone.Hexagon
 
         public IEnumerator Explode(float timeToExplode)
         {
-            //Debug.Log(Row + " - " + Column);
-            IsActive = false;
+            //Debug.Log("Explode!  Row: " + Row + " - Column: " + Column);
+            //IsActive = false;
             transform.GetChild(1).gameObject.SetActive(true);
             yield return new WaitForSeconds(timeToExplode);
             Destroy(gameObject);

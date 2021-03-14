@@ -297,4 +297,4 @@ MonoBehaviour:
   _hexagonColor: 0
   _column: 0
   _row: 0
-  timeToMove: 10
+  timeToMove: 20
