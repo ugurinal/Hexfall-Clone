@@ -12,7 +12,7 @@ namespace HexfallClone.GameController
         Green,
         Red,
         Yellow,
-        White
+        White,
     }
 
     public enum GameState
