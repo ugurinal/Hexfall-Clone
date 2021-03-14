@@ -21,8 +21,15 @@ MonoBehaviour:
   - {fileID: 8342543395174524090, guid: 958a0ea88aa2e28408dfd76363b08dc5, type: 3}
   - {fileID: 8342543395174524090, guid: 747dc5c3c584fec4897d9501486ebe41, type: 3}
   - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
+  BombPrefabs:
+  - {fileID: 8342543395174524090, guid: eb3bcffaa5ad7d14885cd8a3dfc0c4f7, type: 3}
+  - {fileID: 8342543395174524090, guid: a4a0b5827efa29d4bbe04f0069a41e3a, type: 3}
+  - {fileID: 8342543395174524090, guid: c26c49b9f24794d4d8a84cd29823adae, type: 3}
+  - {fileID: 8342543395174524090, guid: 3d4fd0dc45c30c244ad45d389e3500ae, type: 3}
+  - {fileID: 8342543395174524090, guid: 2037e6a0df508b54fa842bb3aeb82c27, type: 3}
   HexagonWidth: 0.889
   HexagonHeight: 0.889
   ExplosionTime: 0.25
   SwipeSensitivity: 20
   ScorePerHexagon: 5
+  ScoreForBomb: 200

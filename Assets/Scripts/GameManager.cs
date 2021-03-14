@@ -37,6 +37,7 @@ namespace HexfallClone.GameController
         private float _hexagoneHeight;
 
         private GameObject[,] _hexagones;
+        private List<GameObject> _bombs;
 
         public GameObject[,] Hexagones { get => _hexagones; }
 
@@ -91,7 +92,8 @@ namespace HexfallClone.GameController
             _UIManager = MainUIManager.Instance;
 
             gameState = GameState.Idle;
-            Debug.Log(gameState);
+
+            _bombs = new List<GameObject>();
 
             IsGameStarted = false; ;
 
@@ -266,12 +268,21 @@ namespace HexfallClone.GameController
 
             if (matchFound)
             {
+                // if bomb is going to explode then remove it from bomb list
+                for (int i = 0; i < 3; i++)
+                {
+                    if (_bombs.Contains(explodedHexagones[i]))
+                    {
+                        _bombs.Remove(explodedHexagones[i]);
+                    }
+                }
+
                 StartCoroutine(ExplodeMatches(explodedHexagones));
 
                 if (IsGameStarted)
                 {
                     _score += _matchCounter * _gameVariables.ScorePerHexagon;
-                    _bombScore = _score;
+                    _bombScore += _matchCounter * _gameVariables.ScorePerHexagon;
                     _UIManager.UpdateUI();
                 }
 
@@ -307,7 +318,18 @@ namespace HexfallClone.GameController
 
                     int hexNum = Random.Range(0, _gameVariables.HexagonPrefabs.Length);
 
-                    GameObject hexagon = Instantiate(_gameVariables.HexagonPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent.transform);
+                    GameObject hexagon;
+
+                    if (_bombScore >= _gameVariables.ScoreForBomb)
+                    {
+                        _bombScore = 0;
+                        hexagon = Instantiate(_gameVariables.BombPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent.transform);
+                        _bombs.Add(hexagon);
+                    }
+                    else
+                    {
+                        hexagon = Instantiate(_gameVariables.HexagonPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent.transform);
+                    }
 
                     _hexagones[column, _gameVariables.GridWidth - row] = hexagon;
                     hexagon.GetComponent<HexagonPiece>().Row = _gameVariables.GridWidth - row;
@@ -368,7 +390,7 @@ namespace HexfallClone.GameController
         public void UpdateScoreAndMove()
         {
             _score += _matchCounter * _gameVariables.ScorePerHexagon;
-            _bombScore = _score;
+            _bombScore += _matchCounter * _gameVariables.ScorePerHexagon;
             _moveCounter++;
             _matchCounter = 0;
             _UIManager.UpdateUI();
