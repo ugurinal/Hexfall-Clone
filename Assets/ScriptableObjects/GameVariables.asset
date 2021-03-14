@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50f9a2d2d351ae04ea84085ab208da74, type: 3}
   m_Name: GameVariables
   m_EditorClassIdentifier: 
-  GridWidth: 5
-  GridHeight: 6
-  GapBetweenHexagones: 0.1
+  GridWidth: 8
+  GridHeight: 9
+  GapBetweenHexagones: 0.05
   HexagonPrefabs:
   - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}
   - {fileID: 8342543395174524090, guid: 00bc16124ba8bdb43bacab1140bc4982, type: 3}
   - {fileID: 8342543395174524090, guid: 958a0ea88aa2e28408dfd76363b08dc5, type: 3}
   - {fileID: 8342543395174524090, guid: 747dc5c3c584fec4897d9501486ebe41, type: 3}
   - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
-  HexagonWidth: 0.7
-  HexagonHeight: 0.7
+  HexagonWidth: 0.889
+  HexagonHeight: 0.889
   ExplosionTime: 0.25
   SwipeSensitivity: 20
   ScorePerHexagon: 5

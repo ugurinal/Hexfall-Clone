@@ -77,6 +77,7 @@ namespace HexfallClone.PlayerInput
                         {
                             SelectNeighbors();
                             isSelected = true;
+                            _gameManager.IsGameStarted = true;
                         }
                     }
                 }

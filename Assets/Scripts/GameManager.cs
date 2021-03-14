@@ -12,7 +12,7 @@ namespace HexfallClone.GameController
         Green,
         Red,
         Yellow,
-        White,
+        Purple
     }
 
     public enum GameState
@@ -52,6 +52,8 @@ namespace HexfallClone.GameController
         private int _score;
         public int Score { get => _score; }
 
+        private int _bombScore;
+
         private int _highScore;
         public int HighScore { get => _highScore; }
 
@@ -62,7 +64,7 @@ namespace HexfallClone.GameController
 
         private MainUIManager _UIManager;
 
-        public bool IsPlayable;
+        public bool IsGameStarted;
 
         private void Awake()
         {
@@ -90,9 +92,11 @@ namespace HexfallClone.GameController
 
             gameState = GameState.Idle;
             Debug.Log(gameState);
-            IsPlayable = true;
+
+            IsGameStarted = false; ;
 
             _matchCounter = 0;
+            _bombScore = 0;
             _score = 0;
             _moveCounter = 0;
             _highScore = PlayerPrefs.GetInt("Highscore", 0);
@@ -115,8 +119,6 @@ namespace HexfallClone.GameController
 
         private IEnumerator InitGame()
         {
-            IsPlayable = false;
-
             gameState = GameState.Filling;
             Debug.Log(gameState);
 
@@ -170,8 +172,6 @@ namespace HexfallClone.GameController
             List<GameObject> explodedHexagones = new List<GameObject>();
             gameState = GameState.Checking;
             Debug.Log(gameState);
-
-            IsPlayable = false;
 
             for (int column = 0; column < _gameVariables.GridWidth; column++)
             {
@@ -267,7 +267,12 @@ namespace HexfallClone.GameController
             if (matchFound)
             {
                 StartCoroutine(ExplodeMatches(explodedHexagones));
-                IsPlayable = false;
+
+                if (IsGameStarted)
+                {
+                    _score += _matchCounter * _gameVariables.ScorePerHexagon;
+                    _UIManager.UpdateUI();
+                }
 
                 return true;
             }
@@ -291,8 +296,6 @@ namespace HexfallClone.GameController
         {
             gameState = GameState.Filling;
             Debug.Log(gameState);
-
-            IsPlayable = false;
 
             for (int column = 0; column < _gameVariables.GridWidth; column++)
             {
@@ -320,8 +323,6 @@ namespace HexfallClone.GameController
         {
             gameState = GameState.Exploading;
             Debug.Log(gameState);
-
-            IsPlayable = false;
 
             for (int i = 0; i < explodedObject.Count; i++)
             {
