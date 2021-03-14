@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridWidth: 8
   GridHeight: 9
+  GapBetweenHexagones: 0.1
   HexagonPrefabs:
   - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}
   - {fileID: 8342543395174524090, guid: 00bc16124ba8bdb43bacab1140bc4982, type: 3}
@@ -22,4 +23,5 @@ MonoBehaviour:
   - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
   HexagonWidth: 0.7
   HexagonHeight: 0.7
-  GapBetweenHexagones: 0.1
+  GameSpeed: 0.1
+  SwipeSensitivity: 20

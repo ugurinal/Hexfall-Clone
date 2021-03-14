@@ -77,6 +77,8 @@ namespace HexfallClone.GameController
             // Row = Height
             // Column = Width
 
+            Application.targetFrameRate = -1;
+
             gameState = GameState.Idle;
 
             _hexagones = new GameObject[_gameVariables.GridWidth, _gameVariables.GridHeight];
@@ -278,12 +280,12 @@ namespace HexfallClone.GameController
             gameState = GameState.Animating;
             for (int i = 0; i < explodedObject.Count; i++)
             {
-                StartCoroutine(explodedObject[i].GetComponent<HexagonPiece>().Explode());
+                StartCoroutine(explodedObject[i].GetComponent<HexagonPiece>().Explode(_gameVariables.GameSpeed));
 
                 missingHexagonCounter[explodedObject[i].GetComponent<HexagonPiece>().Column]++;
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(_gameVariables.GameSpeed);
 
             for (int i = 0; i < explodedObject.Count; i++)
             {
@@ -312,7 +314,7 @@ namespace HexfallClone.GameController
             matchFound = false;
             FillEmptyPlaces();
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(_gameVariables.GameSpeed);
             CheckMatches();
         }
     }
