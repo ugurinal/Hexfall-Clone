@@ -15,6 +15,7 @@ namespace HexfallClone.GameController
         [Header("Hexagon")]
         [Space(7.5f)]
         public GameObject[] HexagonPrefabs;
+        public GameObject[] BombPrefabs;
         public float HexagonWidth = 0.7f;
         public float HexagonHeight = 0.7f;
 

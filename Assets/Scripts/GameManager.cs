@@ -271,6 +271,7 @@ namespace HexfallClone.GameController
                 if (IsGameStarted)
                 {
                     _score += _matchCounter * _gameVariables.ScorePerHexagon;
+                    _bombScore = _score;
                     _UIManager.UpdateUI();
                 }
 
@@ -367,6 +368,7 @@ namespace HexfallClone.GameController
         public void UpdateScoreAndMove()
         {
             _score += _matchCounter * _gameVariables.ScorePerHexagon;
+            _bombScore = _score;
             _moveCounter++;
             _matchCounter = 0;
             _UIManager.UpdateUI();
