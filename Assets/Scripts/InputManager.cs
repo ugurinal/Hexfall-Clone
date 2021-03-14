@@ -278,6 +278,7 @@ namespace HexfallClone.PlayerInput
 
                 if (isMatched)
                 {
+                    _gameManager.UpdateScoreAndMove();
                     Debug.Log("IN BREAK !!!!!");
                     yield break;
                 }

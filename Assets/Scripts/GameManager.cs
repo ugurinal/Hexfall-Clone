@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using HexfallClone.Hexagon;
+using HexfallClone.UISystem;
 
 namespace HexfallClone.GameController
 {
@@ -32,14 +33,6 @@ namespace HexfallClone.GameController
 
         [SerializeField] private GameObject _hexagoneParent;
 
-        /*
-        [SerializeField] private GameObject[] _hexagonePrefabs;
-
-        [SerializeField] private int _gridWidth;
-        [SerializeField] private int _gridHeight;
-        [SerializeField] private float _gridGap;
-        */
-
         private float _hexagoneWidth;
         private float _hexagoneHeight;
 
@@ -55,6 +48,19 @@ namespace HexfallClone.GameController
 
         private GameState gameState;
         public GameState GameState { get => gameState; set => gameState = value; }
+
+        private int _score;
+        public int Score { get => _score; }
+
+        private int _highScore;
+        public int HighScore { get => _highScore; }
+
+        private int _moveCounter;
+        public int MoveCounter { get => _moveCounter; }
+
+        private int _matchCounter;
+
+        private MainUIManager _UIManager;
 
         private void Awake()
         {
@@ -78,9 +84,14 @@ namespace HexfallClone.GameController
             // Row = Height
             // Column = Width
 
-            Application.targetFrameRate = -1;
+            _UIManager = MainUIManager.Instance;
 
             gameState = GameState.Idle;
+
+            _matchCounter = 0;
+            _score = 0;
+            _moveCounter = 0;
+            _highScore = PlayerPrefs.GetInt("Highscore", 0);
 
             _hexagones = new GameObject[_gameVariables.GridWidth, _gameVariables.GridHeight];
             missingHexagonCounter = new int[_gameVariables.GridWidth];
@@ -177,6 +188,8 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[right, row]);
                                 explodedHexagones.Add(_hexagones[column, top]);
 
+                                _matchCounter = 3;
+
                                 matchFound = true;
 
                                 break;
@@ -192,6 +205,8 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[column, row]);
                                 explodedHexagones.Add(_hexagones[right, bottom]);
                                 explodedHexagones.Add(_hexagones[right, row]);
+
+                                _matchCounter = 3;
 
                                 matchFound = true;
 
@@ -212,6 +227,8 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[column, top]);
                                 matchFound = true;
 
+                                _matchCounter = 3;
+
                                 break;
                             }
                         }
@@ -225,6 +242,8 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[column, row]);
                                 explodedHexagones.Add(_hexagones[right, row]);
                                 explodedHexagones.Add(_hexagones[right, top]);
+
+                                _matchCounter = 3;
 
                                 matchFound = true;
 
@@ -320,5 +339,13 @@ namespace HexfallClone.GameController
             yield return new WaitForSeconds(_gameVariables.GameSpeed);
             CheckMatches();
         }
-    }
-}
+
+        public void UpdateScoreAndMove()
+        {
+            _score += _matchCounter * _gameVariables.ScorePerHexagon;
+            _moveCounter++;
+            _matchCounter = 0;
+            _UIManager.UpdateUI();
+        }
+    }   // gamemanager
+}   // namespace
