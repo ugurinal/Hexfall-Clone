@@ -91,8 +91,6 @@ namespace HexfallClone.GameController
 
             _UIManager = MainUIManager.Instance;
 
-            gameState = GameState.Idle;
-
             _bombs = new List<GameObject>();
 
             IsGameStarted = false; ;
@@ -245,8 +243,6 @@ namespace HexfallClone.GameController
                         }
                     }
                 }
-                //if (matchFound)
-                //    break;
             }
 
             if (matchFound)

@@ -274,15 +274,16 @@ namespace HexfallClone.PlayerInput
                 if (isMatched)
                 {
                     _gameManager.UpdateScoreAndMove();
-                    _gameManager.GameState = GameState.Idle;
+                    //_gameManager.GameState = GameState.Idle;
                     yield break;
                 }
                 else
                 {
                     if (i == 2)
                     {
+                        // wait for hexagon to rotate then change game state to idle
+                        yield return new WaitForSeconds(0.1f);
                         _gameManager.GameState = GameState.Idle;
-                        Debug.Log(_gameManager.GameState);
                     }
                 }
 
@@ -335,6 +336,10 @@ namespace HexfallClone.PlayerInput
             }
 
             isMatched = _gameManager.CheckMatches();
+
+            // checkmatches may change game state from rotating to idle if there is no match so to prevent this we change it to ratating again
+            _gameManager.GameState = GameState.Rotating;
+
             if (isMatched)
             {
                 for (int i = 0; i < 3; i++)
@@ -349,12 +354,13 @@ namespace HexfallClone.PlayerInput
             }
             else
             {
-                yield return new WaitForSeconds(0.3f);
-                _gameManager.GameState = GameState.Idle;
-                Debug.Log(_gameManager.GameState);
+                //yield return new WaitForSeconds(0.3f);
+                //_gameManager.GameState = GameState.Idle;
+                //Debug.Log(_gameManager.GameState);
             }
 
             yield return new WaitForSeconds(0.3f);
+
             //yield return new WaitForSeconds(0.6f);
         }
     }   // input manager
