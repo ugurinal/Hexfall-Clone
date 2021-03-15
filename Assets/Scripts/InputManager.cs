@@ -119,6 +119,13 @@ namespace HexfallClone.PlayerInput
 
         private void SelectNeighbors()
         {
+            // make old ones outline inactive
+            for (int i = 0; i < _neighbors.Length; i++)
+            {
+                if (_neighbors[i] != null)
+                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+            }
+
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(startTouchPos), Vector2.zero, 0, _hexagonLayerMask);
 
             if (hit.collider != null)
@@ -128,13 +135,6 @@ namespace HexfallClone.PlayerInput
 
                 int row = hit.transform.GetComponent<HexagonPiece>().Row;
                 int column = hit.transform.GetComponent<HexagonPiece>().Column;
-
-                // make old ones outline inactive
-                for (int i = 0; i < _neighbors.Length; i++)
-                {
-                    if (_neighbors[i] != null)
-                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
-                }
 
                 int left = column - 1;
                 int right = column + 1;
@@ -160,6 +160,83 @@ namespace HexfallClone.PlayerInput
 
                 if (column % 2 == 0)
                 {
+                    // check if user input is valid
+                    if (column == 0)
+                    {
+                        if (row == 0)
+                        {
+                            side = Sides.RightTop;
+                        }
+                        else
+                        {
+                            if (side == Sides.LeftBot)
+                            {
+                                side = Sides.RightBot;
+                            }
+                            else if (side == Sides.LeftTop || side == Sides.RightTop)
+                            {
+                                side = Sides.RightBot;
+                            }
+                        }
+                    }
+                    else if (column == _gameVariables.GridWidth - 1)
+                    {
+                        if (row == 0)
+                        {
+                            side = Sides.LeftTop;
+                        }
+                        else
+                        {
+                            if (side == Sides.RightBot)
+                            {
+                                side = Sides.LeftBot;
+                            }
+                            else if (side == Sides.RightTop)
+                            {
+                                side = Sides.LeftTop;
+                            }
+                        }
+                    }
+                    else if (row == _gameVariables.GridHeight - 1)
+                    {
+                        if (column == 0)
+                        {
+                            if (side == Sides.LeftTop || side == Sides.LeftBot || side == Sides.RightTop)
+                            {
+                                side = Sides.RightBot;
+                            }
+                        }
+                        else if (column == _gameVariables.GridHeight - 1)
+                        {
+                            if (side == Sides.RightTop || side == Sides.RightBot || side == Sides.LeftTop)
+                            {
+                                side = Sides.LeftBot;
+                            }
+                        }
+                        else
+                        {
+                            if (side == Sides.RightTop)
+                            {
+                                side = Sides.RightBot;
+                            }
+                            else if (side == Sides.LeftTop)
+                            {
+                                side = Sides.LeftBot;
+                            }
+                        }
+                    }
+                    else if (row == 0)
+                    {
+                        if (side == Sides.RightBot)
+                        {
+                            side = Sides.RightTop;
+                        }
+                        else if (side == Sides.LeftBot)
+                        {
+                            side = Sides.LeftTop;
+                        }
+                    }
+
                     if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                     {
                         _neighbors[0] = _gameManager.Hexagones[column, row];
@@ -186,11 +263,62 @@ namespace HexfallClone.PlayerInput
                     }
                     else
                     {
+                        Debug.Log(column);
+                        Debug.Log(row);
+                        Debug.Log(side);
                         Debug.Log("Conditions are not met!");
                     }
                 }
                 else
                 {
+                    if (column == _gameVariables.GridWidth - 1)
+                    {
+                        if (row == 0)
+                        {
+                            side = Sides.LeftTop;
+                        }
+                        else if (row == _gameVariables.GridHeight - 1)
+                        {
+                            side = Sides.LeftBot;
+                        }
+                        else
+                        {
+                            if (side == Sides.RightTop)
+                            {
+                                side = Sides.LeftTop;
+                            }
+                            else if (side == Sides.RightBot)
+                            {
+                                side = Sides.LeftBot;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (row == 0)
+                        {
+                            if (side == Sides.LeftBot)
+                            {
+                                side = Sides.LeftTop;
+                            }
+                            else if (side == Sides.RightBot)
+                            {
+                                side = Sides.RightTop;
+                            }
+                        }
+                        else if (row == _gameVariables.GridWidth - 1)
+                        {
+                            if (side == Sides.RightTop)
+                            {
+                                side = Sides.RightBot;
+                            }
+                            else if (side == Sides.LeftTop)
+                            {
+                                side = Sides.LeftBot;
+                            }
+                        }
+                    }
+
                     if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                     {
                         _neighbors[0] = _gameManager.Hexagones[column, row];
@@ -217,6 +345,7 @@ namespace HexfallClone.PlayerInput
                     }
                     else
                     {
+                        Debug.Log(side);
                         Debug.Log("Conditions are not met!");
                     }
                 }
@@ -273,11 +402,7 @@ namespace HexfallClone.PlayerInput
 
                 if (isMatched)
                 {
-                    // increase move counter
                     _gameManager.UpdateMoveCounter();
-
-                    //_gameManager.UpdateScoreAndMove();
-                    //_gameManager.GameState = GameState.Idle;
                     yield break;
                 }
                 else
@@ -335,6 +460,25 @@ namespace HexfallClone.PlayerInput
             }
             else
             {
+                //_gameManager.Hexagones[firstColumn, firstRow] = secondHexagon;
+                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
+                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
+                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition = secondHexagon.transform.position;
+
+                //_gameManager.Hexagones[secondColumn, secondRow] = thirdHexagon;
+                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Row = secondRow;
+                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Column = secondColumn;
+                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
+
+                //_gameManager.Hexagones[thirdColumn, thirdRow] = firstHexagon;
+                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Row = thirdRow;
+                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
+                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = firstHexagon.transform.position;
+
+                //_neighbors[0] = secondHexagon;
+                //_neighbors[1] = thirdHexagon;
+                //_neighbors[2] = firstHexagon;
+
                 //counterclockwise rotate
             }
 
@@ -362,7 +506,7 @@ namespace HexfallClone.PlayerInput
                 //Debug.Log(_gameManager.GameState);
             }
 
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.5f);
 
             //yield return new WaitForSeconds(0.6f);
         }
