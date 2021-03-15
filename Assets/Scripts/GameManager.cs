@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using HexfallClone.Hexagon;
 using HexfallClone.UISystem;
@@ -40,8 +41,6 @@ namespace HexfallClone.GameController
         private List<GameObject> _bombs;
 
         public GameObject[,] Hexagones { get => _hexagones; }
-
-        //private int[] missingHexagonCounter;
 
         private bool matchFound;
 
@@ -102,8 +101,6 @@ namespace HexfallClone.GameController
             _highScore = PlayerPrefs.GetInt("Highscore", 0);
 
             _hexagones = new GameObject[_gameVariables.GridWidth, _gameVariables.GridHeight];
-
-            //missingHexagonCounter = new int[_gameVariables.GridWidth];
 
             matchFound = false;
 
@@ -179,11 +176,15 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[right, row]);
                                 explodedHexagones.Add(_hexagones[column, top]);
 
-                                _matchCounter = 3;
+                                //check 4th one
+                                if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor)
+                                {
+                                    explodedHexagones.Add(_hexagones[right, top]);
+                                }
+
+                                _matchCounter = explodedHexagones.Count;
 
                                 matchFound = true;
-
-                                break;
                             }
                         }
 
@@ -197,11 +198,15 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[right, bottom]);
                                 explodedHexagones.Add(_hexagones[right, row]);
 
-                                _matchCounter = 3;
+                                /*
+                                if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor)
+                                {
+                                    explodedHexagones.Add(_hexagones[right, top]);
+                                }*/
+
+                                _matchCounter = explodedHexagones.Count;
 
                                 matchFound = true;
-
-                                break;
                             }
                         }
                     }
@@ -218,9 +223,15 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[column, top]);
                                 matchFound = true;
 
-                                _matchCounter = 3;
+                                if (top + 1 < _gameVariables.GridHeight)
+                                {
+                                    if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, top + 1].GetComponent<HexagonPiece>().HexagonColor)
+                                    {
+                                        explodedHexagones.Add(_hexagones[right, top + 1]);
+                                    }
+                                }
 
-                                break;
+                                _matchCounter = explodedHexagones.Count;
                             }
                         }
 
@@ -234,11 +245,14 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[right, row]);
                                 explodedHexagones.Add(_hexagones[right, top]);
 
-                                _matchCounter = 3;
+                                if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[column, top].GetComponent<HexagonPiece>().HexagonColor)
+                                {
+                                    explodedHexagones.Add(_hexagones[column, top]);
+                                }
+
+                                _matchCounter = explodedHexagones.Count;
 
                                 matchFound = true;
-
-                                break;
                             }
                         }
                     }
@@ -247,9 +261,9 @@ namespace HexfallClone.GameController
 
             if (matchFound)
             {
-                _matchCounter = explodedHexagones.Count;
+                //_matchCounter = explodedHexagones.Count;
                 // if bomb is going to explode then remove it from bomb list
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < explodedHexagones.Count; i++)
                 {
                     if (_bombs.Contains(explodedHexagones[i]))
                     {
@@ -257,13 +271,18 @@ namespace HexfallClone.GameController
                     }
                 }
 
+                // if they contain duplicate objects remove them
+                explodedHexagones = explodedHexagones.Distinct().ToList();
+
                 StartCoroutine(ExplodeMatches(explodedHexagones));
 
                 if (IsGameStarted)
                 {
+                    //Debug.Log(explodedHexagones.Count);
                     _score += explodedHexagones.Count * _gameVariables.ScorePerHexagon;
                     _bombScore += explodedHexagones.Count * _gameVariables.ScorePerHexagon;
                     _UIManager.UpdateUI();
+                    //explodedHexagones.Clear();
                 }
 
                 return true;
@@ -280,7 +299,7 @@ namespace HexfallClone.GameController
 
         private IEnumerator FillEmptyPlaces()
         {
-            Debug.Log("FILL EMPTY PLACES LOG!");
+            //Debug.Log("FILL EMPTY PLACES LOG!");
             gameState = GameState.Filling;
             List<int> missingHexagonList = new List<int>();
 
@@ -292,7 +311,7 @@ namespace HexfallClone.GameController
                 {
                     if (_hexagones[column, row] == null)
                     {
-                        Debug.Log("Column: " + column + " Row: " + row + " is NULL!");
+                        //Debug.Log("Column: " + column + " Row: " + row + " is NULL!");
                         missingHexagonCounter++;
                     }
                 }
@@ -322,7 +341,7 @@ namespace HexfallClone.GameController
                         hexagon = Instantiate(_gameVariables.HexagonPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent.transform);
                     }
 
-                    Debug.Log(_gameVariables.GridHeight - row - 1);
+                    //Debug.Log(_gameVariables.GridHeight - row - 1);
 
                     _hexagones[column, _gameVariables.GridHeight - row - 1] = hexagon;
                     hexagon.GetComponent<HexagonPiece>().Row = _gameVariables.GridHeight - row - 1;
@@ -340,7 +359,7 @@ namespace HexfallClone.GameController
         private IEnumerator ExplodeMatches(List<GameObject> explodedObject)
         {
             gameState = GameState.Exploading;
-            Debug.Log(gameState);
+            //Debug.Log(gameState);
 
             for (int i = 0; i < explodedObject.Count; i++)
             {
@@ -351,9 +370,9 @@ namespace HexfallClone.GameController
 
             yield return new WaitForSeconds(_gameVariables.ExplosionTime);
 
-            Debug.Log("Column: " + explodedObject[0].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[0].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
-            Debug.Log("Column: " + explodedObject[1].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[1].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
-            Debug.Log("Column: " + explodedObject[2].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[2].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
+            //Debug.Log("Column: " + explodedObject[0].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[0].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
+            //Debug.Log("Column: " + explodedObject[1].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[1].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
+            //Debug.Log("Column: " + explodedObject[2].GetComponent<HexagonPiece>().Column + " Row: " + explodedObject[2].GetComponent<HexagonPiece>().Row + " is giont to Explode!");
 
             // move other hexagones down
             for (int i = 0; i < explodedObject.Count; i++)
@@ -384,8 +403,9 @@ namespace HexfallClone.GameController
             //FillEmptyPlaces();
 
             yield return new WaitForSeconds(0.25f);
+            explodedObject.Clear();
             StartCoroutine(FillEmptyPlaces());
-            Debug.Log("TEST");
+            //Debug.Log("TEST");
 
             //yield return new WaitForSeconds(0.5f);
             //yield return new WaitForSeconds(_gameVariables.ExplosionTime);

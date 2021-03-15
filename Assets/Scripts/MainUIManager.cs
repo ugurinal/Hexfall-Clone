@@ -38,9 +38,8 @@ namespace HexfallClone.UISystem
         {
             _gameManager = GameManager.Instance;
 
-            _scoreText.text = "" + _gameManager.Score;
+            UpdateUI();
             _highScore.text = "Highscore: " + _gameManager.HighScore;
-            _moveText.text = "" + _gameManager.MoveCounter;
         }
 
         public void UpdateUI()

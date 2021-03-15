@@ -273,7 +273,7 @@ namespace HexfallClone.PlayerInput
 
                 if (isMatched)
                 {
-                    _gameManager.UpdateScoreAndMove();
+                    //_gameManager.UpdateScoreAndMove();
                     //_gameManager.GameState = GameState.Idle;
                     yield break;
                 }
