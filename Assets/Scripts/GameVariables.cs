@@ -8,8 +8,8 @@ namespace HexfallClone.GameController
     public class GameVariables : ScriptableObject
     {
         [Header("Grid")]
-        [Range(1, 15)] public int GridWidth = 8;
-        [Range(1, 15)] public int GridHeight = 9;
+        [Range(3, 12)] public int GridWidth = 8;
+        [Range(3, 12)] public int GridHeight = 9;
         public float GapBetweenHexagones = 0.1f;
 
         [Header("Hexagon")]
