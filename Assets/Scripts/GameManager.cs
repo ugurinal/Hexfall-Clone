@@ -166,7 +166,7 @@ namespace HexfallClone.GameController
 
                     if (column % 2 == 0)
                     {
-                        // right then top left
+                        // right top hexagon and top hexagon
                         if (right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                         {
                             if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, row].GetComponent<HexagonPiece>().HexagonColor &&
@@ -188,7 +188,7 @@ namespace HexfallClone.GameController
                             }
                         }
 
-                        // right bottom then top
+                        // right bottom hexagon and top hexagon
                         if (right < _gameVariables.GridWidth && bottom >= 0)
                         {
                             if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, bottom].GetComponent<HexagonPiece>().HexagonColor &&
@@ -198,12 +198,6 @@ namespace HexfallClone.GameController
                                 explodedHexagones.Add(_hexagones[right, bottom]);
                                 explodedHexagones.Add(_hexagones[right, row]);
 
-                                /*
-                                if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor)
-                                {
-                                    explodedHexagones.Add(_hexagones[right, top]);
-                                }*/
-
                                 _matchCounter = explodedHexagones.Count;
 
                                 matchFound = true;
@@ -212,7 +206,7 @@ namespace HexfallClone.GameController
                     }
                     else
                     {
-                        // right then top left
+                        // right top hexagon and top hexagon
                         if (right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                         {
                             if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor &&
@@ -235,7 +229,7 @@ namespace HexfallClone.GameController
                             }
                         }
 
-                        // right bottom then top
+                        // right bottom hexagon and right top hexagon
                         if (right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                         {
                             if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor == _hexagones[right, row].GetComponent<HexagonPiece>().HexagonColor &&
@@ -412,10 +406,8 @@ namespace HexfallClone.GameController
             //CheckMatches();
         }
 
-        public void UpdateScoreAndMove()
+        public void UpdateMoveCounter()
         {
-            _score += _matchCounter * _gameVariables.ScorePerHexagon;
-            _bombScore += _matchCounter * _gameVariables.ScorePerHexagon;
             _moveCounter++;
 
             if (_bombs.Count > 0)
@@ -426,8 +418,197 @@ namespace HexfallClone.GameController
                 }
             }
 
-            _matchCounter = 0;
             _UIManager.UpdateUI();
+        }
+
+        private bool CheckPossibleMatch()
+        {
+            bool foundMatch = false;
+
+            for (int column = 0; column < _gameVariables.GridWidth; column++)
+            {
+                for (int row = 0; row < _gameVariables.GridHeight; row++)
+                {
+                    int left = column - 1;
+                    int right = column + 1;
+                    int top = row + 1;
+                    int bottom = row - 1;
+
+                    GameObject currentHexagon = _hexagones[column, row];
+                    string currentHexagonColor = currentHexagon.GetComponent<HexagonPiece>().HexagonColor;
+
+                    if (column % 2 == 0)
+                    {
+                        // if currenthexagon and bottom right hexagon have same color then check
+                        if (right < _gameVariables.GridWidth && bottom >= 0)
+                        {
+                            if (currentHexagonColor.Equals(_hexagones[right, bottom].GetComponent<HexagonPiece>().HexagonColor))
+                            {
+                                if (currentHexagonColor.Equals(_hexagones[column, top].GetComponent<HexagonPiece>().HexagonColor) ||
+                                    currentHexagonColor.Equals(_hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor))
+                                {
+                                    foundMatch = true;
+                                    break;
+                                }
+
+                                if (column + 2 < _gameVariables.GridWidth)
+                                {
+                                    if (currentHexagonColor.Equals(_hexagones[column + 2, row].GetComponent<HexagonPiece>().HexagonColor) ||
+                                    currentHexagonColor.Equals(_hexagones[column + 2, top].GetComponent<HexagonPiece>().HexagonColor))
+                                    {
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // if currenthexagon and  top right hexagon have same color check possibilities
+                        if (right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
+                        {
+                            if (currentHexagonColor.Equals(_hexagones[right, row].GetComponent<HexagonPiece>().HexagonColor))
+                            {
+                                if (currentHexagonColor.Equals(_hexagones[right, top].GetComponent<HexagonPiece>().HexagonColor))
+                                {
+                                    foundMatch = true;
+                                    break;
+                                }
+
+                                if (row + 2 < _gameVariables.GridWidth)
+                                {
+                                    if (currentHexagonColor.Equals(_hexagones[column, row + 2].GetComponent<HexagonPiece>().HexagonColor))
+                                    {
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+
+                                if (left >= 0)
+                                {
+                                    if (currentHexagonColor.Equals(_hexagones[left, row].GetComponent<HexagonPiece>().HexagonColor) ||
+                                        currentHexagonColor.Equals(_hexagones[left, top].GetComponent<HexagonPiece>().HexagonColor))
+                                    {
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // column is odd
+
+                        // current hexagon and right bot hexagon
+                        if (right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
+                        {
+                            if (currentHexagonColor.Equals(_hexagones[right, row].GetComponent<HexagonPiece>().HexagonColor))
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+
+            return foundMatch;
+        }
+
+        public void CheckPossibleMatchesWithRaycast()
+        {
+            bool foundMatch = false;
+
+            for (int column = 0; column < _gameVariables.GridWidth; column++)
+            {
+                for (int row = 0; row < _gameVariables.GridHeight; row++)
+                {
+                    GameObject currentHexagon = _hexagones[column, row];
+
+                    currentHexagon.GetComponent<PolygonCollider2D>().enabled = false;
+
+                    // BUG: CHECK IF ITS BOMB, IF IT IS THEN GET CIRCLE COLLIDER
+                    // OR CHANGE BOMB CIRCLE COLLIDER TO POLYGON COLLIDER
+
+                    List<RaycastHit2D> hits = new List<RaycastHit2D>();
+
+                    for (int i = 0; i < 6; i++)
+                    {
+                        RaycastHit2D hit = Physics2D.Raycast(currentHexagon.transform.position, _gameVariables.RaycastDirections[i], 10f, LayerMask.GetMask("Hexagon"));
+
+                        if (hit.collider != null)
+                        {
+                            hits.Add(hit);
+                        }
+                    }
+
+                    int blueCounter = 0;
+                    int greenCounter = 0;
+                    int purpleCounter = 0;
+                    int redCounter = 0;
+                    int yellowCounter = 0;
+
+                    for (int i = 0; i < hits.Count; i++)
+                    {
+                        string color = hits[i].transform.GetComponent<HexagonPiece>().HexagonColor;
+                        switch (color)
+                        {
+                            case "Blue":
+                                Debug.Log("Blue");
+                                blueCounter++;
+                                break;
+
+                            case "Green":
+                                Debug.Log("GREEN");
+
+                                greenCounter++;
+                                break;
+
+                            case "Purple":
+                                Debug.Log("PURPLE");
+
+                                purpleCounter++;
+                                break;
+
+                            case "Red":
+                                Debug.Log("RED");
+
+                                redCounter++;
+                                break;
+
+                            case "Yellow":
+                                Debug.Log("YELLOW");
+
+                                yellowCounter++;
+                                break;
+
+                            default:
+                                Debug.Log("No Color");
+                                break;
+                        }
+                    }
+
+                    if (blueCounter >= 3 || greenCounter >= 3 || purpleCounter >= 3 || redCounter >= 3 || yellowCounter >= 3)
+                    {
+                        Debug.Log(blueCounter);
+                        Debug.Log(greenCounter);
+                        Debug.Log(purpleCounter);
+                        Debug.Log(redCounter);
+                        Debug.Log(yellowCounter);
+                        foundMatch = true;
+                        Debug.Log("Match found = " + foundMatch);
+                        //return foundMatch;
+                    }
+                    else
+                    {
+                        Debug.Log("No match");
+                        matchFound = false;
+                    }
+
+                    currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
+                }
+            }
+
+            Debug.Log("Match found = " + foundMatch);
+            //return foundMatch;
         }
     }   // gamemanager
 }   // namespace

@@ -25,5 +25,6 @@ namespace HexfallClone.GameController
         public float SwipeSensitivity = 20f;
         public int ScorePerHexagon = 5;
         public int ScoreForBomb = 200;
+        public List<Vector2> RaycastDirections;
     }
 }
