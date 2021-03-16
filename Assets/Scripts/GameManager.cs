@@ -128,8 +128,8 @@ namespace HexfallClone.GameController
 
         private void CalculateStartPosition()
         {
-            float x = -_hexagoneWidth * (_gameVariables.GridWidth / 2.0f) + _hexagoneWidth;
-            float y = -_hexagoneHeight * (_gameVariables.GridHeight / 2.0f);
+            float x = -_hexagoneWidth * ((_gameVariables.GridWidth - 1) / 2.0f) + 0.25f;
+            float y = -_hexagoneHeight * (_gameVariables.GridHeight / 2.0f) - 0.25f;
             startPos = new Vector3(x, y, 0);
         }
 
