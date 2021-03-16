@@ -15,7 +15,6 @@ namespace HexfallClone.UISystem
 
         [Header("Top Panel")]
         [SerializeField] private TextMeshProUGUI _scoreText;
-        [SerializeField] private TextMeshProUGUI _highScore;
         [SerializeField] private TextMeshProUGUI _moveText;
 
         [Header("Left Menu Panel")]
@@ -58,7 +57,6 @@ namespace HexfallClone.UISystem
             _gameManager = GameManager.Instance;
 
             UpdateUI();
-            _highScore.text = "Highscore: " + _gameManager.HighScore;
 
             // remove listeners
             _menuButton.onClick.RemoveAllListeners();
