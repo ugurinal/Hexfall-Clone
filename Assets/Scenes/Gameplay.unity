@@ -906,7 +906,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scoreText: {fileID: 602525263}
-  _highScore: {fileID: 0}
   _moveText: {fileID: 1873795747}
   _leftMenuAnim: {fileID: 794571508}
   _menuButton: {fileID: 2142657395}
@@ -1750,7 +1749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameVariables: {fileID: 11400000, guid: 4e8c805bc5720da4093b3d97f7d522f0, type: 2}
-  _hexagoneParent: {fileID: 1385659909}
+  _hexagoneParent: {fileID: 1385659910}
   IsGameStarted: 0
 --- !u!1 &1065575055
 GameObject:
