@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50f9a2d2d351ae04ea84085ab208da74, type: 3}
   m_Name: GameVariables
   m_EditorClassIdentifier: 
-  GridWidth: 4
-  GridHeight: 5
+  GridWidth: 3
+  GridHeight: 3
   GapBetweenHexagones: 0.05
   HexagonPrefabs:
   - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using HexfallClone.UISystem;
 
 namespace HexfallClone.Hexagon
 {
@@ -11,6 +12,8 @@ namespace HexfallClone.Hexagon
 
         public int BombCounter { get => _bombCounter; set => _bombCounter = value; }
 
+        private MainUIManager _UIManager;
+
         private void Awake()
         {
             TargetPosition = transform.position;
@@ -18,8 +21,8 @@ namespace HexfallClone.Hexagon
 
         private void Start()
         {
-            _bombCounter = 6;
             transform.GetChild(2).GetComponent<TextMeshPro>().text = "" + _bombCounter;
+            _UIManager = MainUIManager.Instance;
         }
 
         private void Update()
@@ -43,6 +46,8 @@ namespace HexfallClone.Hexagon
             transform.GetChild(2).GetComponent<TextMeshPro>().text = "" + _bombCounter;
             if (_bombCounter <= 0)
             {
+                _UIManager.LoadGameOverScreen("BOMB EXPLOADED!");
+                Debug.Log("BOMB EXPLOADED!");
                 Debug.Log("GAME OVER!");
             }
         }

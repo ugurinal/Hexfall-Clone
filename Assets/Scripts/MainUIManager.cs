@@ -13,14 +13,26 @@ namespace HexfallClone.UISystem
         private static MainUIManager _instance;
         public static MainUIManager Instance { get => _instance; }
 
+        [Header("Top Panel")]
         [SerializeField] private TextMeshProUGUI _scoreText;
         [SerializeField] private TextMeshProUGUI _highScore;
         [SerializeField] private TextMeshProUGUI _moveText;
-        [SerializeField] private Animator _anim;
+
+        [Header("Left Menu Panel")]
+        [Space(10f)]
+        [SerializeField] private Animator _leftMenuAnim;
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _newGameButton;
         [SerializeField] private Button _backButton;
         [SerializeField] private Button _exitButton;
+
+        [Header("Game Over Panel")]
+        [Space(10f)]
+        [SerializeField] private GameObject _gameoverPanel;
+        [SerializeField] private TextMeshProUGUI _gameoverInfo;
+        [SerializeField] private Animator _gameoverAnim;
+        [SerializeField] private Button _restartButton;
+        [SerializeField] private Button _gameOverExitButton;
 
         private GameManager _gameManager;
 
@@ -48,15 +60,21 @@ namespace HexfallClone.UISystem
             UpdateUI();
             _highScore.text = "Highscore: " + _gameManager.HighScore;
 
+            // remove listeners
             _menuButton.onClick.RemoveAllListeners();
             _newGameButton.onClick.RemoveAllListeners();
             _backButton.onClick.RemoveAllListeners();
             _exitButton.onClick.RemoveAllListeners();
+            _restartButton.onClick.RemoveAllListeners();
+            _gameOverExitButton.onClick.RemoveAllListeners();
 
+            // add listeners
             _menuButton.onClick.AddListener(OpenMenu);
             _newGameButton.onClick.AddListener(LoadNewGame);
             _backButton.onClick.AddListener(CloseMenu);
             _exitButton.onClick.AddListener(ExitGame);
+            _restartButton.onClick.AddListener(LoadNewGame);
+            _gameOverExitButton.onClick.AddListener(ExitGame);
         }
 
         public void UpdateUI()
@@ -65,14 +83,16 @@ namespace HexfallClone.UISystem
             _moveText.text = "" + _gameManager.MoveCounter;
         }
 
-        private void OpenMenu()
+        public void OpenMenu()
         {
-            _anim.SetTrigger("FadeIn");
+            _menuButton.interactable = false;   // player can not press more than one time
+            _leftMenuAnim.SetTrigger("FadeIn");
         }
 
-        private void CloseMenu()
+        public void CloseMenu()
         {
-            _anim.SetTrigger("FadeOut");
+            _menuButton.interactable = true;
+            _leftMenuAnim.SetTrigger("FadeOut");
         }
 
         private void LoadNewGame()
@@ -83,6 +103,13 @@ namespace HexfallClone.UISystem
         private void ExitGame()
         {
             Application.Quit();
+        }
+
+        public void LoadGameOverScreen(string message)
+        {
+            _gameoverInfo.text = message;
+            _gameoverPanel.SetActive(true);
+            _gameoverAnim.SetTrigger("Gameover");
         }
     }
 }

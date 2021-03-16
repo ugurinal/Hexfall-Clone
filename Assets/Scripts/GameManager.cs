@@ -339,8 +339,6 @@ namespace HexfallClone.GameController
                         hexagon = Instantiate(_gameVariables.HexagonPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent.transform);
                     }
 
-                    //Debug.Log(_gameVariables.GridHeight - row - 1);
-
                     _hexagones[column, _gameVariables.GridHeight - row - 1] = hexagon;
                     hexagon.GetComponent<HexagonPiece>().Row = _gameVariables.GridHeight - row - 1;
                     hexagon.GetComponent<HexagonPiece>().Column = column;
@@ -351,15 +349,17 @@ namespace HexfallClone.GameController
                 }
             }
 
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.2f);
 
             CheckMatches();
 
+            yield return new WaitForSeconds(0.2f);
+
             if (!CheckPossibleMatchesWithRaycast())
             {
-                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
-                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
-                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
+                _UIManager.LoadGameOverScreen("THERE IS NO AVAILABLE MATCHES!");
+                Debug.Log("THERE IS NO AVAILABLE MATCHES!");
+                Debug.Log("GAME OVER!");
             }
         }
 
@@ -495,18 +495,16 @@ namespace HexfallClone.GameController
                     if (blueCounter >= 3 || greenCounter >= 3 || purpleCounter >= 3 || redCounter >= 3 || yellowCounter >= 3)
                     {
                         foundMatch = true;
-                        Debug.Log("Match found = " + foundMatch);
+                        Debug.Log("There are potential matches.");
                         currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                         return foundMatch;
-                        //return foundMatch;
                     }
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                 }
             }
 
-            Debug.Log("Match found = " + foundMatch);
+            Debug.Log("There is no potential matches.");
             return foundMatch;
-            //return foundMatch;
         }
     }   // gamemanager
 }   // namespace

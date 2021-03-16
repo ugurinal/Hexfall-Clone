@@ -127,20 +127,7 @@ namespace HexfallClone.PlayerInput
             {
                 Debug.Log("HIT HIT HIT");
 
-                //
                 ClearNeigbors();
-                //// make old ones outline inactive
-                //for (int i = 0; i < _neighbors.Length; i++)
-                //{
-                //    if (_neighbors[i] != null)
-                //    {
-                //        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
-                //    }
-
-                //    _neighbors[i] = null;
-                //}
-
-                //ClearNeigbors();
 
                 Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
                 Vector3 mousePos = startTouchPos;
@@ -285,7 +272,6 @@ namespace HexfallClone.PlayerInput
                 }
                 else
                 {
-                    Debug.Log("ODD COLUMN!");
                     if (column == _gameVariables.GridWidth - 1)
                     {
                         if (row == 0)
@@ -329,7 +315,7 @@ namespace HexfallClone.PlayerInput
                                 side = Sides.RightTop;
                             }
                         }
-                        else if (row == _gameVariables.GridWidth - 1)
+                        else if (row == _gameVariables.GridHeight - 1)
                         {
                             if (side == Sides.RightTop)
                             {
@@ -342,8 +328,8 @@ namespace HexfallClone.PlayerInput
                         }
                         else
                         {
-                            Debug.Log("TEST 2");
                             Debug.Log(side);
+                            Debug.Log("Conditions are not met 1 !");
                         }
                     }
 
@@ -374,22 +360,16 @@ namespace HexfallClone.PlayerInput
                     else
                     {
                         Debug.Log(side);
-                        Debug.Log("Conditions are not met!");
+                        Debug.Log("Conditions are not met 2 !");
                     }
                 }
 
-                Debug.Log("Before activate new outlines");
                 //active new ones outline
                 for (int i = 0; i < _neighbors.Length; i++)
                 {
-                    Debug.Log("AAAAAAAAAAAAAA");
                     if (_neighbors[i] != null)
                     {
                         _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        Debug.Log("Neighbors are null!");
                     }
                 }
             }
@@ -671,14 +651,11 @@ namespace HexfallClone.PlayerInput
 
         private void ClearNeigbors()
         {
-            Debug.Log("In clear!");
-            Debug.Log(_neighbors.Length);
             for (int i = 0; i < _neighbors.Length; i++)
             {
                 if (_neighbors[i] != null)
                 {
                     _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
-                    _neighbors[i] = null;
                 }
 
                 _neighbors[i] = null;
