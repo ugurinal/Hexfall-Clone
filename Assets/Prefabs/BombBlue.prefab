@@ -347,8 +347,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8342543395174524068}
   - component: {fileID: 8342543395174524091}
+  - component: {fileID: 333304308649816149}
   - component: {fileID: 953242313178391943}
-  - component: {fileID: 474328469}
   m_Layer: 8
   m_Name: BombBlue
   m_TagString: Untagged
@@ -423,6 +423,58 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!60 &333304308649816149
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8342543395174524090}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.8888889, y: 0.8958333}
+    newSize: {x: 1.08, y: 0.96}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.34647572, y: 0.054883726}
+      - {x: 0.28338754, y: 0.19377272}
+      - {x: 0.27243912, y: 0.22464223}
+      - {x: 0.273751, y: 0.15775546}
+      - {x: 0.26710057, y: 0.23501845}
+      - {x: 0.21907756, y: 0.2838076}
+      - {x: 0.18050978, y: 0.30587116}
+      - {x: 0.15037964, y: 0.3045276}
+      - {x: 0.13203323, y: 0.3199253}
+      - {x: 0.104174376, y: 0.32709864}
+      - {x: 0.07446615, y: 0.33960605}
+      - {x: 0.02334415, y: 0.34742463}
+      - {x: -0.14671548, y: 0.342115}
+      - {x: -0.2495475, y: 0.2995743}
+      - {x: -0.35814774, y: 0.21478404}
+      - {x: -0.38338894, y: 0.16342932}
+      - {x: -0.44001088, y: 0.03299825}
+      - {x: -0.4494487, y: -0.036555436}
+      - {x: -0.43557724, y: -0.1543237}
+      - {x: -0.4103103, y: -0.20293479}
+      - {x: -0.3616992, y: -0.29572162}
+      - {x: -0.24364367, y: -0.38658214}
+      - {x: -0.17110027, y: -0.43017504}
+      - {x: 0.07638889, y: -0.44791666}
+      - {x: 0.22385094, y: -0.37047553}
+      - {x: 0.33111656, y: -0.22078961}
+      - {x: 0.36199328, y: -0.104077615}
 --- !u!114 &953242313178391943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,19 +491,3 @@ MonoBehaviour:
   _column: 0
   _row: 0
   timeToMove: 20
---- !u!58 &474328469
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8342543395174524090}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.03756854, y: -0.04426813}
-  serializedVersion: 2
-  m_Radius: 0.39989683

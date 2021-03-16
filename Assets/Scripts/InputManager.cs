@@ -71,10 +71,12 @@ namespace HexfallClone.PlayerInput
                             if (!isSelected)
                                 return;
                             //Debug.Log("Starting Rotate");
+                            Debug.Log("Swipe!");
                             StartCoroutine(StartRotate());
                         }
                         else
                         {
+                            Debug.Log("Touch!");
                             SelectNeighbors();
                             isSelected = true;
                             _gameManager.IsGameStarted = true;
@@ -123,12 +125,22 @@ namespace HexfallClone.PlayerInput
 
             if (hit.collider != null)
             {
-                // make old ones outline inactive
-                for (int i = 0; i < _neighbors.Length; i++)
-                {
-                    if (_neighbors[i] != null)
-                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
-                }
+                Debug.Log("HIT HIT HIT");
+
+                //
+                ClearNeigbors();
+                //// make old ones outline inactive
+                //for (int i = 0; i < _neighbors.Length; i++)
+                //{
+                //    if (_neighbors[i] != null)
+                //    {
+                //        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                //    }
+
+                //    _neighbors[i] = null;
+                //}
+
+                //ClearNeigbors();
 
                 Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
                 Vector3 mousePos = startTouchPos;
@@ -160,6 +172,7 @@ namespace HexfallClone.PlayerInput
 
                 if (column % 2 == 0)
                 {
+                    Debug.Log("Even Column");
                     // check if user input is valid
                     if (column == 0)
                     {
@@ -272,6 +285,7 @@ namespace HexfallClone.PlayerInput
                 }
                 else
                 {
+                    Debug.Log("ODD COLUMN!");
                     if (column == _gameVariables.GridWidth - 1)
                     {
                         if (row == 0)
@@ -326,6 +340,11 @@ namespace HexfallClone.PlayerInput
                                 side = Sides.LeftBot;
                             }
                         }
+                        else
+                        {
+                            Debug.Log("TEST 2");
+                            Debug.Log(side);
+                        }
                     }
 
                     if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
@@ -359,12 +378,24 @@ namespace HexfallClone.PlayerInput
                     }
                 }
 
+                Debug.Log("Before activate new outlines");
                 //active new ones outline
                 for (int i = 0; i < _neighbors.Length; i++)
                 {
+                    Debug.Log("AAAAAAAAAAAAAA");
                     if (_neighbors[i] != null)
+                    {
                         _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        Debug.Log("Neighbors are null!");
+                    }
                 }
+            }
+            else
+            {
+                Debug.Log("NO HIT NO HIT!");
             }
         }
 
@@ -412,6 +443,7 @@ namespace HexfallClone.PlayerInput
                 if (isMatched)
                 {
                     _gameManager.UpdateMoveCounter();
+
                     yield break;
                 }
                 else
@@ -419,7 +451,7 @@ namespace HexfallClone.PlayerInput
                     if (i == 2)
                     {
                         // wait for hexagon to rotate then change game state to idle
-                        yield return new WaitForSeconds(0.15f);
+                        yield return new WaitForSeconds(0.3f);
                         _gameManager.GameState = GameState.Idle;
                     }
                 }
@@ -496,6 +528,8 @@ namespace HexfallClone.PlayerInput
             // checkmatches may change game state from rotating to idle if there is no match so to prevent this we change it to ratating again
             _gameManager.GameState = GameState.Rotating;
 
+            yield return new WaitForSeconds(0.1f);
+
             if (isMatched)
             {
                 for (int i = 0; i < 3; i++)
@@ -505,19 +539,9 @@ namespace HexfallClone.PlayerInput
                         _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
                     }
                 }
-
-                //yield return new WaitForSeconds(0.3f);
-            }
-            else
-            {
-                //yield return new WaitForSeconds(0.3f);
-                //_gameManager.GameState = GameState.Idle;
-                //Debug.Log(_gameManager.GameState);
             }
 
             yield return new WaitForSeconds(0.5f);
-
-            //yield return new WaitForSeconds(0.6f);
         }
 
         private void SelectNeighborsTest(RaycastHit2D hit)
@@ -642,6 +666,22 @@ namespace HexfallClone.PlayerInput
             {
                 if (_neighbors[i] != null)
                     _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
+            }
+        }
+
+        private void ClearNeigbors()
+        {
+            Debug.Log("In clear!");
+            Debug.Log(_neighbors.Length);
+            for (int i = 0; i < _neighbors.Length; i++)
+            {
+                if (_neighbors[i] != null)
+                {
+                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                    _neighbors[i] = null;
+                }
+
+                _neighbors[i] = null;
             }
         }
     }   // input manager

@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 7417195647324747978}
   - component: {fileID: 510484279025324629}
   m_Layer: 8
-  m_Name: HexagonWhite
+  m_Name: HexagonPurple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

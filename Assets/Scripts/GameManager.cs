@@ -284,7 +284,10 @@ namespace HexfallClone.GameController
             else
             {
                 gameState = GameState.Idle;
-
+                //if (!CheckPossibleMatchesWithRaycast())
+                //{
+                //    Debug.Log("In match list !");
+                //}
                 // check possible matches
 
                 return false;
@@ -327,6 +330,7 @@ namespace HexfallClone.GameController
                         int bombNum = Random.Range(0, _gameVariables.BombPrefabs.Length);
                         _bombScore = 0;
                         hexagon = Instantiate(_gameVariables.BombPrefabs[bombNum], initPos, Quaternion.identity, _hexagoneParent.transform);
+                        hexagon.GetComponent<BombHexagon>().BombCounter = _gameVariables.BombLife;
                         _bombs.Add(hexagon);
                     }
                     else
@@ -340,14 +344,23 @@ namespace HexfallClone.GameController
                     _hexagones[column, _gameVariables.GridHeight - row - 1] = hexagon;
                     hexagon.GetComponent<HexagonPiece>().Row = _gameVariables.GridHeight - row - 1;
                     hexagon.GetComponent<HexagonPiece>().Column = column;
+                    hexagon.GetComponent<HexagonPiece>().MovementSpeed = _gameVariables.HexagonMovementSpeed;
                     hexagon.GetComponent<HexagonPiece>().TargetPosition = targetPos;
 
                     yield return new WaitForSeconds(0.05f);
                 }
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.4f);
+
             CheckMatches();
+
+            if (!CheckPossibleMatchesWithRaycast())
+            {
+                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
+                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
+                Debug.Log("GAME OVER! GAME OVER! GAME OVER! GAME OVER! GAME OVER!");
+            }
         }
 
         private IEnumerator ExplodeMatches(List<GameObject> explodedObject)
@@ -399,10 +412,7 @@ namespace HexfallClone.GameController
             yield return new WaitForSeconds(0.25f);
             explodedObject.Clear();
             StartCoroutine(FillEmptyPlaces());
-            //Debug.Log("TEST");
 
-            //yield return new WaitForSeconds(0.5f);
-            //yield return new WaitForSeconds(_gameVariables.ExplosionTime);
             //CheckMatches();
         }
 
@@ -421,7 +431,7 @@ namespace HexfallClone.GameController
             _UIManager.UpdateUI();
         }
 
-        public void CheckPossibleMatchesWithRaycast()
+        public bool CheckPossibleMatchesWithRaycast()
         {
             bool foundMatch = false;
 
@@ -432,9 +442,6 @@ namespace HexfallClone.GameController
                     GameObject currentHexagon = _hexagones[column, row];
 
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = false;
-
-                    // BUG: CHECK IF ITS BOMB, IF IT IS THEN GET CIRCLE COLLIDER
-                    // OR CHANGE BOMB CIRCLE COLLIDER TO POLYGON COLLIDER
 
                     List<RaycastHit2D> hits = new List<RaycastHit2D>();
 
@@ -460,62 +467,45 @@ namespace HexfallClone.GameController
                         switch (color)
                         {
                             case "Blue":
-                                Debug.Log("Blue");
                                 blueCounter++;
                                 break;
 
                             case "Green":
-                                Debug.Log("GREEN");
-
                                 greenCounter++;
                                 break;
 
                             case "Purple":
-                                Debug.Log("PURPLE");
-
                                 purpleCounter++;
                                 break;
 
                             case "Red":
-                                Debug.Log("RED");
-
                                 redCounter++;
                                 break;
 
                             case "Yellow":
-                                Debug.Log("YELLOW");
-
                                 yellowCounter++;
                                 break;
 
                             default:
-                                Debug.Log("No Color");
+                                Debug.Log("No Color!");
                                 break;
                         }
                     }
 
                     if (blueCounter >= 3 || greenCounter >= 3 || purpleCounter >= 3 || redCounter >= 3 || yellowCounter >= 3)
                     {
-                        Debug.Log(blueCounter);
-                        Debug.Log(greenCounter);
-                        Debug.Log(purpleCounter);
-                        Debug.Log(redCounter);
-                        Debug.Log(yellowCounter);
                         foundMatch = true;
                         Debug.Log("Match found = " + foundMatch);
+                        currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
+                        return foundMatch;
                         //return foundMatch;
                     }
-                    else
-                    {
-                        Debug.Log("No match");
-                        matchFound = false;
-                    }
-
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                 }
             }
 
             Debug.Log("Match found = " + foundMatch);
+            return foundMatch;
             //return foundMatch;
         }
     }   // gamemanager

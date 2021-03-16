@@ -10,14 +10,16 @@ namespace HexfallClone.Hexagon
         [SerializeField] public HexagonColor _hexagonColor;
         [SerializeField] private int _column;
         [SerializeField] private int _row;
-        [SerializeField] public float timeToMove = 5f;
 
         private Vector2 _targetPos;
+        private float _movementSpeed;
         private bool _isActive = true;
 
         public int Row { get => _row; set => _row = value; }
         public int Column { get => _column; set => _column = value; }
         public string HexagonColor { get => _hexagonColor.ToString(); }
+
+        public float MovementSpeed { get => _movementSpeed; set => _movementSpeed = value; }
 
         public Vector2 TargetPosition { get => _targetPos; set => _targetPos = value; }
 
@@ -34,7 +36,7 @@ namespace HexfallClone.Hexagon
             {
                 if (Vector2.Distance(transform.position, _targetPos) > 0.01f)
                 {
-                    transform.position = Vector2.Lerp(transform.position, _targetPos, timeToMove * Time.deltaTime);
+                    transform.position = Vector2.Lerp(transform.position, _targetPos, _movementSpeed * Time.deltaTime);
                 }
                 else
                 {

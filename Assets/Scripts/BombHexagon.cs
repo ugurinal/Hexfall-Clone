@@ -9,6 +9,8 @@ namespace HexfallClone.Hexagon
     {
         private int _bombCounter;
 
+        public int BombCounter { get => _bombCounter; set => _bombCounter = value; }
+
         private void Awake()
         {
             TargetPosition = transform.position;
@@ -26,7 +28,7 @@ namespace HexfallClone.Hexagon
             {
                 if (Vector2.Distance(transform.position, TargetPosition) > 0.01f)
                 {
-                    transform.position = Vector2.Lerp(transform.position, TargetPosition, timeToMove * Time.deltaTime);
+                    transform.position = Vector2.Lerp(transform.position, TargetPosition, MovementSpeed * Time.deltaTime);
                 }
                 else
                 {
