@@ -460,24 +460,24 @@ namespace HexfallClone.PlayerInput
             }
             else
             {
-                //_gameManager.Hexagones[firstColumn, firstRow] = secondHexagon;
-                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
-                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
-                //_gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition = secondHexagon.transform.position;
+                _gameManager.Hexagones[firstColumn, firstRow] = secondHexagon;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
+                _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().TargetPosition = firstHexagon.transform.position;
 
-                //_gameManager.Hexagones[secondColumn, secondRow] = thirdHexagon;
-                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Row = secondRow;
-                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Column = secondColumn;
-                //_gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
+                _gameManager.Hexagones[secondColumn, secondRow] = thirdHexagon;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Row = secondRow;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().Column = secondColumn;
+                _gameManager.Hexagones[secondColumn, secondRow].GetComponent<HexagonPiece>().TargetPosition = secondHexagon.transform.position;
 
-                //_gameManager.Hexagones[thirdColumn, thirdRow] = firstHexagon;
-                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Row = thirdRow;
-                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
-                //_gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = firstHexagon.transform.position;
+                _gameManager.Hexagones[thirdColumn, thirdRow] = firstHexagon;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Row = thirdRow;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
+                _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
 
-                //_neighbors[0] = secondHexagon;
-                //_neighbors[1] = thirdHexagon;
-                //_neighbors[2] = firstHexagon;
+                _neighbors[0] = secondHexagon;
+                _neighbors[1] = thirdHexagon;
+                _neighbors[2] = firstHexagon;
 
                 //counterclockwise rotate
             }
