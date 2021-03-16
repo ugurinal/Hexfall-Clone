@@ -285,7 +285,7 @@ namespace HexfallClone.GameController
             {
                 gameState = GameState.Idle;
 
-                // IsPlayable = true;
+                // check possible matches
 
                 return false;
             }

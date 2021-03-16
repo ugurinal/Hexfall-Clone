@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameVariables
   m_EditorClassIdentifier: 
   GridWidth: 6
-  GridHeight: 6
+  GridHeight: 7
   GapBetweenHexagones: 0.05
   HexagonPrefabs:
   - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}
@@ -29,7 +29,7 @@ MonoBehaviour:
   - {fileID: 8342543395174524090, guid: 2037e6a0df508b54fa842bb3aeb82c27, type: 3}
   HexagonWidth: 0.889
   HexagonHeight: 0.889
-  ExplosionTime: 0.5
+  ExplosionTime: 0.3
   SwipeSensitivity: 20
   ScorePerHexagon: 5
   ScoreForBomb: 200

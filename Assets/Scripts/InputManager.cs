@@ -119,17 +119,17 @@ namespace HexfallClone.PlayerInput
 
         private void SelectNeighbors()
         {
-            // make old ones outline inactive
-            for (int i = 0; i < _neighbors.Length; i++)
-            {
-                if (_neighbors[i] != null)
-                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
-            }
-
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(startTouchPos), Vector2.zero, 0, _hexagonLayerMask);
 
             if (hit.collider != null)
             {
+                // make old ones outline inactive
+                for (int i = 0; i < _neighbors.Length; i++)
+                {
+                    if (_neighbors[i] != null)
+                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                }
+
                 Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
                 Vector3 mousePos = startTouchPos;
 
@@ -169,13 +169,20 @@ namespace HexfallClone.PlayerInput
                         }
                         else
                         {
-                            if (side == Sides.LeftBot)
+                            if (row == _gameVariables.GridHeight - 1)
                             {
                                 side = Sides.RightBot;
                             }
-                            else if (side == Sides.LeftTop || side == Sides.RightTop)
+                            else
                             {
-                                side = Sides.RightBot;
+                                if (side == Sides.LeftTop)
+                                {
+                                    side = Sides.RightTop;
+                                }
+                                if (side == Sides.LeftBot)
+                                {
+                                    side = Sides.RightBot;
+                                }
                             }
                         }
                     }
@@ -184,6 +191,10 @@ namespace HexfallClone.PlayerInput
                         if (row == 0)
                         {
                             side = Sides.LeftTop;
+                        }
+                        else if (row == _gameVariables.GridHeight - 1)
+                        {
+                            side = Sides.LeftBot;
                         }
                         else
                         {
@@ -199,19 +210,9 @@ namespace HexfallClone.PlayerInput
                     }
                     else if (row == _gameVariables.GridHeight - 1)
                     {
-                        if (column == 0)
+                        if (column == _gameVariables.GridHeight - 1)
                         {
-                            if (side == Sides.LeftTop || side == Sides.LeftBot || side == Sides.RightTop)
-                            {
-                                side = Sides.RightBot;
-                            }
-                        }
-                        else if (column == _gameVariables.GridHeight - 1)
-                        {
-                            if (side == Sides.RightTop || side == Sides.RightBot || side == Sides.LeftTop)
-                            {
-                                side = Sides.LeftBot;
-                            }
+                            side = Sides.LeftBot;
                         }
                         else
                         {
@@ -275,7 +276,15 @@ namespace HexfallClone.PlayerInput
                     {
                         if (row == 0)
                         {
-                            side = Sides.LeftTop;
+                            if (side == Sides.LeftBot || side == Sides.RightBot)
+                            {
+                                SelectNeighborsTest(hit);
+                                return;
+                            }
+                            else if (side == Sides.RightTop)
+                            {
+                                side = Sides.LeftTop;
+                            }
                         }
                         else if (row == _gameVariables.GridHeight - 1)
                         {
@@ -410,7 +419,7 @@ namespace HexfallClone.PlayerInput
                     if (i == 2)
                     {
                         // wait for hexagon to rotate then change game state to idle
-                        yield return new WaitForSeconds(0.1f);
+                        yield return new WaitForSeconds(0.15f);
                         _gameManager.GameState = GameState.Idle;
                     }
                 }
@@ -509,6 +518,131 @@ namespace HexfallClone.PlayerInput
             yield return new WaitForSeconds(0.5f);
 
             //yield return new WaitForSeconds(0.6f);
+        }
+
+        private void SelectNeighborsTest(RaycastHit2D hit)
+        {
+            Debug.Log("New Selection Func");
+            Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
+            Vector3 mousePos = startTouchPos;
+
+            int row = hit.transform.GetComponent<HexagonPiece>().Row;
+            int column = hit.transform.GetComponent<HexagonPiece>().Column;
+
+            column--;
+
+            int left = column - 1;
+            int right = column + 1;
+            int bottom = row - 1;
+            int top = row + 1;
+
+            if (mousePos.x >= selectedObj.x && mousePos.y >= selectedObj.y)
+            {
+                side = Sides.RightTop;
+            }
+            else if (mousePos.x >= selectedObj.x && mousePos.y < selectedObj.y)
+            {
+                side = Sides.RightBot;
+            }
+            else if (mousePos.x < selectedObj.x && mousePos.y >= selectedObj.y)
+            {
+                side = Sides.LeftTop;
+            }
+            else if (mousePos.x < selectedObj.x && mousePos.y < selectedObj.y)
+            {
+                side = Sides.LeftBot;
+            }
+
+            if (column % 2 == 0)
+            {
+                // check if user input is valid
+                if (column == _gameVariables.GridWidth - 2)
+                {
+                    if (row == 0)
+                    {
+                        side = Sides.RightTop;
+                    }
+                    else if (row == _gameVariables.GridHeight - 1)
+                    {
+                        side = Sides.LeftBot;
+                    }
+                    else
+                    {
+                        if (side == Sides.RightTop)
+                        {
+                            side = Sides.LeftTop;
+                        }
+                        else if (side == Sides.RightBot)
+                        {
+                            side = Sides.LeftBot;
+                        }
+                    }
+                }
+                else
+                {
+                    if (row == 0)
+                    {
+                        if (side == Sides.LeftBot)
+                        {
+                            side = Sides.LeftTop;
+                        }
+                        else if (side == Sides.RightBot)
+                        {
+                            side = Sides.RightTop;
+                        }
+                    }
+                    else if (row == _gameVariables.GridWidth - 1)
+                    {
+                        if (side == Sides.RightTop)
+                        {
+                            side = Sides.RightBot;
+                        }
+                        else if (side == Sides.LeftTop)
+                        {
+                            side = Sides.LeftBot;
+                        }
+                    }
+                }
+
+                if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
+                {
+                    _neighbors[0] = _gameManager.Hexagones[column, top];
+                    _neighbors[1] = _gameManager.Hexagones[right, row];
+                    _neighbors[2] = _gameManager.Hexagones[column, row];
+                }
+                else if (side == Sides.RightBot && right < _gameVariables.GridWidth && bottom >= 0)
+                {
+                    _neighbors[0] = _gameManager.Hexagones[column, row];
+                    _neighbors[1] = _gameManager.Hexagones[right, bottom];
+                    _neighbors[2] = _gameManager.Hexagones[column, bottom];
+                }
+                else if (side == Sides.LeftTop && left >= 0 && top < _gameVariables.GridHeight)
+                {
+                    _neighbors[0] = _gameManager.Hexagones[column, top];
+                    _neighbors[1] = _gameManager.Hexagones[column, row];
+                    _neighbors[2] = _gameManager.Hexagones[left, row];
+                }
+                else if (side == Sides.LeftBot && left >= 0 && bottom >= 0)
+                {
+                    _neighbors[0] = _gameManager.Hexagones[column, row];
+                    _neighbors[1] = _gameManager.Hexagones[column, bottom];
+                    _neighbors[2] = _gameManager.Hexagones[left, bottom];
+                }
+                else
+                {
+                    Debug.Log(column);
+                    Debug.Log(row);
+                    Debug.Log(side);
+                    Debug.Log("Conditions are not met!");
+                }
+            }
+
+            //active new ones outline
+            for (int i = 0; i < _neighbors.Length; i++)
+            {
+                if (_neighbors[i] != null)
+                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
+            }
         }
     }   // input manager
 }   // namepsace
