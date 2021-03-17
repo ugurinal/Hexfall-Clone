@@ -348,15 +348,15 @@ namespace HexfallClone.GameController
                     Vector3 initPos = CalculatePosition(_gameVariables.GridWidth + 4, column);      // hexagon will be instantiated from this position just to make them come from above
                     Vector3 targetPos = CalculatePosition(_gameVariables.GridHeight - row - 1, column); // hexagons destination
                                                                                                         // meaning of -row -1 => if height == 7 and missingHexagon[2] == 1
-                                                                                                        // this means its destination is column 2 row 5
+                                                                                                        // this means its destination is column 2 row 6 and column 2 row 5
 
                     GameObject hexagon;
 
-                    // if we reached bomb score then instantiate a bomb then reset bomb score
+                    // if we reached bomb score then instantiate a bomb and reset bomb score
                     if (_bombScore >= _gameVariables.ScoreForBomb)
                     {
-                        int bombNum = Random.Range(0, _gameVariables.BombPrefabs.Length);
                         _bombScore = 0;
+                        int bombNum = Random.Range(0, _gameVariables.BombPrefabs.Length);
                         hexagon = Instantiate(_gameVariables.BombPrefabs[bombNum], initPos, Quaternion.identity, _hexagoneParent);
                         hexagon.GetComponent<BombHexagon>().BombCounter = _gameVariables.BombLife;
                         _bombs.Add(hexagon);
@@ -377,11 +377,11 @@ namespace HexfallClone.GameController
                 }
             }
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.2f);  // wait hexagon to reach their destination. It must be changed if hexagons speed are changed
 
-            CheckMatches();
+            CheckMatches(); // check if there is match again
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.2f);  // wait to check possible matches
 
             if (!CheckPossibleMatchesWithRaycast())
             {
@@ -391,19 +391,25 @@ namespace HexfallClone.GameController
             }
         }
 
+        /// <summary>
+        /// this method exploades hexagons that matches
+        /// </summary>
+        /// <param name="explodedObject"></param>
+        /// <returns></returns>
         private IEnumerator ExplodeMatches(List<GameObject> explodedObject)
         {
             gameState = GameState.Exploading;
-            //Debug.Log(gameState);
 
+            // inform hexagon to destroy themselves
             for (int i = 0; i < explodedObject.Count; i++)
             {
                 StartCoroutine(explodedObject[i].GetComponent<HexagonPiece>().Explode(_gameVariables.ExplosionTime));
             }
 
-            yield return new WaitForSeconds(_gameVariables.ExplosionTime);
+            yield return new WaitForSeconds(_gameVariables.ExplosionTime);  // wait for them to explode then move other hexagons downward
 
             // move other hexagones down
+            // get exploaded hexagons coordinate then move its top hexagon to current hexagon coordinate
             for (int i = 0; i < explodedObject.Count; i++)
             {
                 int row = explodedObject[i].GetComponent<HexagonPiece>().Row;
@@ -429,15 +435,16 @@ namespace HexfallClone.GameController
             }
 
             matchFound = false;
-            //FillEmptyPlaces();
 
-            yield return new WaitForSeconds(0.25f);
-            explodedObject.Clear();
-            StartCoroutine(FillEmptyPlaces());
-
-            //CheckMatches();
+            yield return new WaitForSeconds(0.25f); // wait before filling the game board
+            explodedObject.Clear(); // clear matches list
+            StartCoroutine(FillEmptyPlaces());  // fill the game board
         }
 
+        /// <summary>
+        /// called from input manager if there is match then increase move counter by one
+        /// and if there is bomb, inform them
+        /// </summary>
         public void UpdateMoveCounter()
         {
             _moveCounter++;
@@ -453,6 +460,13 @@ namespace HexfallClone.GameController
             _UIManager.UpdateUI();
         }
 
+        /// <summary>
+        /// checkes possible matches
+        /// we shoot raycast from every index to up, down, top right, top left, bot right, bot left. if hexagon is surrounded by 3 same color
+        /// that means there is still match available
+        /// it doesn't work right now in 3x3 grid but it could solved easily
+        /// </summary>
+        /// <returns></returns>
         public bool CheckPossibleMatchesWithRaycast()
         {
             bool foundMatch = false;
@@ -463,14 +477,17 @@ namespace HexfallClone.GameController
                 {
                     GameObject currentHexagon = _hexagones[column, row];
 
+                    // deactivate current hexagon polygon collider to shoot raycast
+                    // if we don't then raycast will hit the current hexagon itself
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = false;
 
-                    List<RaycastHit2D> hits = new List<RaycastHit2D>();
+                    List<RaycastHit2D> hits = new List<RaycastHit2D>(); // keep all hits
 
                     for (int i = 0; i < 6; i++)
                     {
                         RaycastHit2D hit = Physics2D.Raycast(currentHexagon.transform.position, _gameVariables.RaycastDirections[i], 10f, LayerMask.GetMask("Hexagon"));
 
+                        // if we hit collider add to hit list
                         if (hit.collider != null)
                         {
                             hits.Add(hit);
@@ -483,6 +500,7 @@ namespace HexfallClone.GameController
                     int redCounter = 0;
                     int yellowCounter = 0;
 
+                    // check hexagons color that gets hit
                     for (int i = 0; i < hits.Count; i++)
                     {
                         string color = hits[i].transform.GetComponent<HexagonPiece>().HexagonColor;
@@ -514,10 +532,12 @@ namespace HexfallClone.GameController
                         }
                     }
 
+                    // if one of them is three than there is possible match
                     if (blueCounter >= 3 || greenCounter >= 3 || purpleCounter >= 3 || redCounter >= 3 || yellowCounter >= 3)
                     {
+                        // if there is match activate current hexagon collider than return
+                        // we don't need to check rest of them
                         foundMatch = true;
-                        Debug.Log("There are potential matches.");
                         currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                         return foundMatch;
                     }
