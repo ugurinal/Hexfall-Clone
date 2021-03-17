@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using HexfallClone.GameController;
 
@@ -7,13 +6,17 @@ namespace HexfallClone.Hexagon
 {
     public class HexagonPiece : MonoBehaviour
     {
-        [SerializeField] public HexagonColor _hexagonColor;
-        [SerializeField] private int _column;
-        [SerializeField] private int _row;
+        #region Private Fields
+
+        private int _column;
+        private int _row;
 
         private Vector2 _targetPos;
         private float _movementSpeed;
-        private bool _isActive = true;
+
+        #endregion Private Fields
+
+        #region Public Fields
 
         public int Row { get => _row; set => _row = value; }
         public int Column { get => _column; set => _column = value; }
@@ -23,7 +26,9 @@ namespace HexfallClone.Hexagon
 
         public Vector2 TargetPosition { get => _targetPos; set => _targetPos = value; }
 
-        public bool IsActive { get => _isActive; set => _isActive = value; }
+        #endregion Public Fields
+
+        [SerializeField] private HexagonColor _hexagonColor;    // to select hexagon color from inspector
 
         private void Awake()
         {
@@ -32,26 +37,21 @@ namespace HexfallClone.Hexagon
 
         private void Update()
         {
-            if (IsActive)
+            if (Vector2.Distance(transform.position, _targetPos) > 0.01f)
             {
-                if (Vector2.Distance(transform.position, _targetPos) > 0.01f)
-                {
-                    transform.position = Vector2.Lerp(transform.position, _targetPos, _movementSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    transform.position = _targetPos;
-                }
+                transform.position = Vector2.Lerp(transform.position, _targetPos, _movementSpeed * Time.deltaTime);
+            }
+            else
+            {
+                transform.position = _targetPos;
             }
         }
 
         public IEnumerator Explode(float timeToExplode)
         {
-            //Debug.Log("Explode!  Row: " + Row + " - Column: " + Column);
-            //IsActive = false;
-            transform.GetChild(1).gameObject.SetActive(true);
+            transform.GetChild(1).gameObject.SetActive(true);   // star
             yield return new WaitForSeconds(timeToExplode);
             Destroy(gameObject);
         }
-    }
-}
+    }   // hexagonpiece
+}   // namespace

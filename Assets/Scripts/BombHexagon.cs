@@ -8,11 +8,21 @@ namespace HexfallClone.Hexagon
 {
     public class BombHexagon : HexagonPiece
     {
+        #region Private Fields
+
         private int _bombCounter;
+
+        private MainUIManager _UIManager;
+
+        #endregion Private Fields
+
+        #region Public Fields
 
         public int BombCounter { get => _bombCounter; set => _bombCounter = value; }
 
-        private MainUIManager _UIManager;
+        #endregion Public Fields
+
+        [SerializeField] private TextMeshPro _bombText;
 
         private void Awake()
         {
@@ -21,29 +31,27 @@ namespace HexfallClone.Hexagon
 
         private void Start()
         {
-            transform.GetChild(2).GetComponent<TextMeshPro>().text = "" + _bombCounter;
             _UIManager = MainUIManager.Instance;
+
+            _bombText.text = "" + _bombCounter;
         }
 
         private void Update()
         {
-            if (IsActive)
+            if (Vector2.Distance(transform.position, TargetPosition) > 0.01f)
             {
-                if (Vector2.Distance(transform.position, TargetPosition) > 0.01f)
-                {
-                    transform.position = Vector2.Lerp(transform.position, TargetPosition, MovementSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    transform.position = TargetPosition;
-                }
+                transform.position = Vector2.Lerp(transform.position, TargetPosition, MovementSpeed * Time.deltaTime);
+            }
+            else
+            {
+                transform.position = TargetPosition;
             }
         }
 
         public void DecreaseCounter()
         {
             _bombCounter--;
-            transform.GetChild(2).GetComponent<TextMeshPro>().text = "" + _bombCounter;
+            _bombText.text = "" + _bombCounter;
             if (_bombCounter <= 0)
             {
                 _UIManager.LoadGameOverScreen("BOMB EXPLOADED!");

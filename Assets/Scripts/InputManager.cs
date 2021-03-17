@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using HexfallClone.GameController;
 using HexfallClone.Hexagon;
@@ -44,7 +43,7 @@ namespace HexfallClone.PlayerInput
         private bool isSelected;
         private bool isMatched;
 
-        private GameObject[] _neighbors;
+        private GameObject[] _hexagonGroup;
 
         #endregion Private Fields
 
@@ -54,74 +53,77 @@ namespace HexfallClone.PlayerInput
         {
             isSelected = false;
             isMatched = false;
-            _neighbors = new GameObject[3];
+            _hexagonGroup = new GameObject[3];
             _gameManager = GameManager.Instance;
             _hexagonLayerMask = LayerMask.GetMask("Hexagon");
         }
 
         private void Update()
         {
-            if (_gameManager.GameState == GameState.Idle)
-            {
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        startTouchPos = Input.mousePosition;
-                    }
-                    if (Input.GetMouseButtonUp(0))
-                    {
-                        endTouchPos = Input.mousePosition;
+            if (_gameManager.GameState != GameState.Idle)
+                return;
 
-                        if (CheckSwipe(startTouchPos, endTouchPos))
-                        {
-                            // if nothing is selected at the beginning of game then do not execute startrotate method
-                            if (!isSelected)
-                                return;
-                            //Debug.Log("Starting Rotate");
-                            Debug.Log("Swipe!");
-                            StartCoroutine(StartRotate());
-                        }
-                        else
-                        {
-                            Debug.Log("Touch!");
-                            SelectNeighbors();
-                            isSelected = true;
-                            _gameManager.IsGameStarted = true;
-                        }
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    startTouchPos = Input.mousePosition;
+                }
+                if (Input.GetMouseButtonUp(0))
+                {
+                    endTouchPos = Input.mousePosition;
+
+                    if (CheckSwipe(startTouchPos, endTouchPos))
+                    {
+                        // if nothing is selected at the beginning of game then do not execute startrotate method
+                        if (!isSelected)
+                            return;
+                        Debug.Log("Swipe!");
+                        StartCoroutine(StartRotate());
+                    }
+                    else
+                    {
+                        Debug.Log("Touch!");
+                        SelectNeighbors();
+                        isSelected = true;
+                        _gameManager.IsGameStarted = true;
                     }
                 }
-                else if (Application.platform == RuntimePlatform.Android)
+            }
+            else if (Application.platform == RuntimePlatform.Android)
+            {
+                if (Input.touchCount > 0)
                 {
-                    if (Input.touchCount > 0)
+                    touch = Input.GetTouch(0);
+
+                    switch (touch.phase)
                     {
-                        touch = Input.GetTouch(0);
+                        case TouchPhase.Began:
+                            startTouchPos = touch.position;
+                            break;
 
-                        switch (touch.phase)
-                        {
-                            case TouchPhase.Began:
-                                startTouchPos = touch.position;
-                                break;
+                        case TouchPhase.Ended:
+                            endTouchPos = touch.position;
 
-                            case TouchPhase.Ended:
-                                endTouchPos = touch.position;
+                            if (CheckSwipe(startTouchPos, endTouchPos))
+                            {
+                                if (!isSelected)
+                                    return;
+                                Debug.Log("Swipe");
+                                StartCoroutine(StartRotate());
+                            }
+                            else
+                            {
+                                Debug.Log("Touch");
+                                SelectNeighbors();
+                                isSelected = true;
+                                _gameManager.IsGameStarted = true;
+                            }
+                            break;
 
-                                if (CheckSwipe(startTouchPos, endTouchPos))
-                                {
-                                    Debug.Log("Swipe");
-                                }
-                                else
-                                {
-                                    SelectNeighbors();
-                                    isSelected = true;
-                                    Debug.Log("Touch");
-                                }
-                                break;
-
-                            default:
-                                Debug.Log("Default STATE!");
-                                break;
-                        }
+                        default:
+                            Debug.Log("Default STATE!");
+                            break;
                     }
                 }
             }
@@ -133,9 +135,7 @@ namespace HexfallClone.PlayerInput
 
             if (hit.collider != null)
             {
-                Debug.Log("HIT HIT HIT");
-
-                ClearNeigbors();
+                ClearHexagonGroup();    // clear old hexagon group
 
                 Vector3 selectedObj = Camera.main.WorldToScreenPoint(hit.transform.position);
                 Vector3 mousePos = startTouchPos;
@@ -148,26 +148,13 @@ namespace HexfallClone.PlayerInput
                 int bottom = row - 1;
                 int top = row + 1;
 
-                if (mousePos.x >= selectedObj.x && mousePos.y >= selectedObj.y)
-                {
-                    side = Sides.RightTop;
-                }
-                else if (mousePos.x >= selectedObj.x && mousePos.y < selectedObj.y)
-                {
-                    side = Sides.RightBot;
-                }
-                else if (mousePos.x < selectedObj.x && mousePos.y >= selectedObj.y)
-                {
-                    side = Sides.LeftTop;
-                }
-                else if (mousePos.x < selectedObj.x && mousePos.y < selectedObj.y)
-                {
-                    side = Sides.LeftBot;
-                }
+                // player touched which part of hexagon
+                CheckHexagonSide(mousePos, selectedObj);
 
                 if (column % 2 == 0)
                 {
-                    Debug.Log("Even Column");
+                    Debug.Log("Player touched even column!");
+
                     // check if user input is valid
                     if (column == 0)
                     {
@@ -248,38 +235,41 @@ namespace HexfallClone.PlayerInput
 
                     if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, top];
-                        _neighbors[1] = _gameManager.Hexagones[right, row];
-                        _neighbors[2] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                        _hexagonGroup[1] = _gameManager.Hexagones[right, row];
+                        _hexagonGroup[2] = _gameManager.Hexagones[column, row];
                     }
                     else if (side == Sides.RightBot && right < _gameVariables.GridWidth && bottom >= 0)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, row];
-                        _neighbors[1] = _gameManager.Hexagones[right, bottom];
-                        _neighbors[2] = _gameManager.Hexagones[column, bottom];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[1] = _gameManager.Hexagones[right, bottom];
+                        _hexagonGroup[2] = _gameManager.Hexagones[column, bottom];
                     }
                     else if (side == Sides.LeftTop && left >= 0 && top < _gameVariables.GridHeight)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, top];
-                        _neighbors[1] = _gameManager.Hexagones[column, row];
-                        _neighbors[2] = _gameManager.Hexagones[left, row];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                        _hexagonGroup[1] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[2] = _gameManager.Hexagones[left, row];
                     }
                     else if (side == Sides.LeftBot && left >= 0 && bottom >= 0)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, row];
-                        _neighbors[1] = _gameManager.Hexagones[column, bottom];
-                        _neighbors[2] = _gameManager.Hexagones[left, bottom];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[1] = _gameManager.Hexagones[column, bottom];
+                        _hexagonGroup[2] = _gameManager.Hexagones[left, bottom];
                     }
                     else
                     {
                         Debug.Log(column);
                         Debug.Log(row);
                         Debug.Log(side);
-                        Debug.Log("Conditions are not met!");
+                        Debug.Log("Conditions are not met! - Even Column");
                     }
                 }
                 else
                 {
+                    Debug.Log("Player touched odd column!");
+
+                    // check if player input is valid
                     if (column == _gameVariables.GridWidth - 1)
                     {
                         if (row == 0)
@@ -343,50 +333,49 @@ namespace HexfallClone.PlayerInput
 
                     if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, top];
-                        _neighbors[1] = _gameManager.Hexagones[right, top];
-                        _neighbors[2] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                        _hexagonGroup[1] = _gameManager.Hexagones[right, top];
+                        _hexagonGroup[2] = _gameManager.Hexagones[column, row];
                     }
                     else if (side == Sides.RightBot && right < _gameVariables.GridWidth && bottom >= 0)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, row];
-                        _neighbors[1] = _gameManager.Hexagones[right, row];
-                        _neighbors[2] = _gameManager.Hexagones[column, bottom];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[1] = _gameManager.Hexagones[right, row];
+                        _hexagonGroup[2] = _gameManager.Hexagones[column, bottom];
                     }
                     else if (side == Sides.LeftTop && left >= 0 && top < _gameVariables.GridHeight)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, top];
-                        _neighbors[1] = _gameManager.Hexagones[column, row];
-                        _neighbors[2] = _gameManager.Hexagones[left, top];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                        _hexagonGroup[1] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[2] = _gameManager.Hexagones[left, top];
                     }
                     else if (side == Sides.LeftBot && left >= 0 && bottom >= 0)
                     {
-                        _neighbors[0] = _gameManager.Hexagones[column, row];
-                        _neighbors[1] = _gameManager.Hexagones[column, bottom];
-                        _neighbors[2] = _gameManager.Hexagones[left, row];
+                        _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                        _hexagonGroup[1] = _gameManager.Hexagones[column, bottom];
+                        _hexagonGroup[2] = _gameManager.Hexagones[left, row];
                     }
                     else
                     {
+                        Debug.Log(column);
+                        Debug.Log(row);
                         Debug.Log(side);
-                        Debug.Log("Conditions are not met 2 !");
+                        Debug.Log("Conditions are not met! - Odd Column");
                     }
                 }
 
-                //active new ones outline
-                for (int i = 0; i < _neighbors.Length; i++)
+                //active new hexagon group outline
+                for (int i = 0; i < _hexagonGroup.Length; i++)
                 {
-                    if (_neighbors[i] != null)
+                    if (_hexagonGroup[i] != null)
                     {
-                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
+                        _hexagonGroup[i].transform.GetChild(0).gameObject.SetActive(true);
                     }
                 }
-            }
-            else
-            {
-                Debug.Log("NO HIT NO HIT!");
             }
         }
 
+        // check if it is swipe or touch
         private bool CheckSwipe(Vector3 startPos, Vector3 endPos)
         {
             Vector3 temp = endPos - startPos;
@@ -412,22 +401,60 @@ namespace HexfallClone.PlayerInput
             return Mathf.Abs(Vector3.Distance(startPos, endPos)) > _gameVariables.SwipeSensitivity;
         }
 
+        /// <summary>
+        /// player touched which part of hexagon
+        /// </summary>
+        /// <param name="mousePos"></param>
+        /// <param name="selectedObj"></param>
+        private void CheckHexagonSide(Vector3 mousePos, Vector3 selectedObj)
+        {
+            if (mousePos.x >= selectedObj.x && mousePos.y >= selectedObj.y)
+            {
+                side = Sides.RightTop;
+            }
+            else if (mousePos.x >= selectedObj.x && mousePos.y < selectedObj.y)
+            {
+                side = Sides.RightBot;
+            }
+            else if (mousePos.x < selectedObj.x && mousePos.y >= selectedObj.y)
+            {
+                side = Sides.LeftTop;
+            }
+            else if (mousePos.x < selectedObj.x && mousePos.y < selectedObj.y)
+            {
+                side = Sides.LeftBot;
+            }
+            else
+            {
+                Debug.Log("Conditions are not met. - CheckHexagonSide !");
+            }
+        }
+
+        /// <summary>
+        /// start rotating hexagon group
+        /// if it matches then it stops rotating
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator StartRotate()
         {
+            // if there hexagon group is null then do nothing
             for (int i = 0; i < 3; i++)
             {
-                if (_neighbors[i] == null)
+                if (_hexagonGroup[i] == null)
                 {
                     yield break;
                 }
             }
 
+            // update game state
             _gameManager.GameState = GameState.Rotating;
 
+            // start rotating
             for (int i = 0; i < 3; i++)
             {
                 StartCoroutine(RotateHexagonGroup());
 
+                // if is matched then stop
                 if (isMatched)
                 {
                     _gameManager.UpdateMoveCounter();
@@ -436,6 +463,7 @@ namespace HexfallClone.PlayerInput
                 }
                 else
                 {
+                    // if it does not match and its end of the for loop then update game state to idle
                     if (i == 2)
                     {
                         // wait for hexagon to rotate then change game state to idle
@@ -448,22 +476,27 @@ namespace HexfallClone.PlayerInput
             }
         }
 
+        /// <summary>
+        /// this method rotates hexagon group
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator RotateHexagonGroup()
         {
             _gameManager.GameState = GameState.Rotating;
 
-            GameObject firstHexagon = _neighbors[0];
+            GameObject firstHexagon = _hexagonGroup[0];
             int firstRow = firstHexagon.GetComponent<HexagonPiece>().Row;
             int firstColumn = firstHexagon.GetComponent<HexagonPiece>().Column;
 
-            GameObject secondHexagon = _neighbors[1];
+            GameObject secondHexagon = _hexagonGroup[1];
             int secondRow = secondHexagon.GetComponent<HexagonPiece>().Row;
             int secondColumn = secondHexagon.GetComponent<HexagonPiece>().Column;
 
-            GameObject thirdHexagon = _neighbors[2];
+            GameObject thirdHexagon = _hexagonGroup[2];
             int thirdRow = thirdHexagon.GetComponent<HexagonPiece>().Row;
             int thirdColumn = thirdHexagon.GetComponent<HexagonPiece>().Column;
 
+            // clock wise rotate 1 -> 2 -> 3 ->1
             if (_swipeDirection == SwipeDirection.Right || _swipeDirection == SwipeDirection.Down)
             {
                 _gameManager.Hexagones[firstColumn, firstRow] = thirdHexagon;
@@ -481,14 +514,13 @@ namespace HexfallClone.PlayerInput
                 _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
                 _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
 
-                _neighbors[0] = thirdHexagon;
-                _neighbors[1] = firstHexagon;
-                _neighbors[2] = secondHexagon;
-
-                //clockwise rotate
+                _hexagonGroup[0] = thirdHexagon;
+                _hexagonGroup[1] = firstHexagon;
+                _hexagonGroup[2] = secondHexagon;
             }
             else
             {
+                // counterclockwise rotate 1 -> 3 -> 2 -> 1
                 _gameManager.Hexagones[firstColumn, firstRow] = secondHexagon;
                 _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Row = firstRow;
                 _gameManager.Hexagones[firstColumn, firstRow].GetComponent<HexagonPiece>().Column = firstColumn;
@@ -504,27 +536,28 @@ namespace HexfallClone.PlayerInput
                 _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().Column = thirdColumn;
                 _gameManager.Hexagones[thirdColumn, thirdRow].GetComponent<HexagonPiece>().TargetPosition = thirdHexagon.transform.position;
 
-                _neighbors[0] = secondHexagon;
-                _neighbors[1] = thirdHexagon;
-                _neighbors[2] = firstHexagon;
+                _hexagonGroup[0] = secondHexagon;
+                _hexagonGroup[1] = thirdHexagon;
+                _hexagonGroup[2] = firstHexagon;
 
                 //counterclockwise rotate
             }
 
             isMatched = _gameManager.CheckMatches();
 
-            // checkmatches may change game state from rotating to idle if there is no match so to prevent this we change it to ratating again
+            // checkmatches method may change game state from rotating to idle if there is no match so to prevent this we change it to ratating again
             _gameManager.GameState = GameState.Rotating;
 
             yield return new WaitForSeconds(0.1f);
 
+            // if is matched deactive hexagon outline of other hexagons that were in the hexagon group
             if (isMatched)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    if (_neighbors[i] != null)
+                    if (_hexagonGroup[i] != null)
                     {
-                        _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                        _hexagonGroup[i].transform.GetChild(0).gameObject.SetActive(false);
                     }
                 }
             }
@@ -532,6 +565,10 @@ namespace HexfallClone.PlayerInput
             yield return new WaitForSeconds(0.5f);
         }
 
+        /// <summary>
+        /// this method is only for one condition if selected row = 0 and column is width - 1 also it is odd then select neighbors is different
+        /// </summary>
+        /// <param name="hit"></param>
         private void SelectNeighborsTest(RaycastHit2D hit)
         {
             Debug.Log("New Selection Func");
@@ -618,27 +655,27 @@ namespace HexfallClone.PlayerInput
 
                 if (side == Sides.RightTop && right < _gameVariables.GridWidth && top < _gameVariables.GridHeight)
                 {
-                    _neighbors[0] = _gameManager.Hexagones[column, top];
-                    _neighbors[1] = _gameManager.Hexagones[right, row];
-                    _neighbors[2] = _gameManager.Hexagones[column, row];
+                    _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                    _hexagonGroup[1] = _gameManager.Hexagones[right, row];
+                    _hexagonGroup[2] = _gameManager.Hexagones[column, row];
                 }
                 else if (side == Sides.RightBot && right < _gameVariables.GridWidth && bottom >= 0)
                 {
-                    _neighbors[0] = _gameManager.Hexagones[column, row];
-                    _neighbors[1] = _gameManager.Hexagones[right, bottom];
-                    _neighbors[2] = _gameManager.Hexagones[column, bottom];
+                    _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                    _hexagonGroup[1] = _gameManager.Hexagones[right, bottom];
+                    _hexagonGroup[2] = _gameManager.Hexagones[column, bottom];
                 }
                 else if (side == Sides.LeftTop && left >= 0 && top < _gameVariables.GridHeight)
                 {
-                    _neighbors[0] = _gameManager.Hexagones[column, top];
-                    _neighbors[1] = _gameManager.Hexagones[column, row];
-                    _neighbors[2] = _gameManager.Hexagones[left, row];
+                    _hexagonGroup[0] = _gameManager.Hexagones[column, top];
+                    _hexagonGroup[1] = _gameManager.Hexagones[column, row];
+                    _hexagonGroup[2] = _gameManager.Hexagones[left, row];
                 }
                 else if (side == Sides.LeftBot && left >= 0 && bottom >= 0)
                 {
-                    _neighbors[0] = _gameManager.Hexagones[column, row];
-                    _neighbors[1] = _gameManager.Hexagones[column, bottom];
-                    _neighbors[2] = _gameManager.Hexagones[left, bottom];
+                    _hexagonGroup[0] = _gameManager.Hexagones[column, row];
+                    _hexagonGroup[1] = _gameManager.Hexagones[column, bottom];
+                    _hexagonGroup[2] = _gameManager.Hexagones[left, bottom];
                 }
                 else
                 {
@@ -650,23 +687,26 @@ namespace HexfallClone.PlayerInput
             }
 
             //active new ones outline
-            for (int i = 0; i < _neighbors.Length; i++)
+            for (int i = 0; i < _hexagonGroup.Length; i++)
             {
-                if (_neighbors[i] != null)
-                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(true);
+                if (_hexagonGroup[i] != null)
+                    _hexagonGroup[i].transform.GetChild(0).gameObject.SetActive(true);
             }
         }
 
-        private void ClearNeigbors()
+        /// <summary>
+        /// clear hexagon group
+        /// </summary>
+        private void ClearHexagonGroup()
         {
-            for (int i = 0; i < _neighbors.Length; i++)
+            for (int i = 0; i < _hexagonGroup.Length; i++)
             {
-                if (_neighbors[i] != null)
+                if (_hexagonGroup[i] != null)
                 {
-                    _neighbors[i].transform.GetChild(0).gameObject.SetActive(false);
+                    _hexagonGroup[i].transform.GetChild(0).gameObject.SetActive(false);
                 }
 
-                _neighbors[i] = null;
+                _hexagonGroup[i] = null;
             }
         }
     }   // input manager

@@ -488,6 +488,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hexagonColor: 4
-  _column: 0
-  _row: 0
-  timeToMove: 20
+  _bombText: {fileID: 1792723737}
