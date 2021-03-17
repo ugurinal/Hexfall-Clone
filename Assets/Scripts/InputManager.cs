@@ -327,7 +327,7 @@ namespace HexfallClone.PlayerInput
                         else
                         {
                             Debug.Log(side);
-                            Debug.Log("Conditions are not met 1 !");
+                            Debug.Log("Conditions are not met - is player input valid? !");
                         }
                     }
 

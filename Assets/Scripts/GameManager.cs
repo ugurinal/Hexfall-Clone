@@ -582,7 +582,6 @@ namespace HexfallClone.GameController
 
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                 }
-                Debug.Log("Checking other columns");
             }
 
             Debug.Log(foundMatch);
@@ -606,26 +605,15 @@ namespace HexfallClone.GameController
             bool isMatched = true;
 
             int currentHexagonColumn = currentHexagon.GetComponent<HexagonPiece>().Column;
-            Debug.Log(currentHexagon.transform.name);
-            Debug.Log(currentHexagonColumn);
 
             int firstRow = hexagons[0].GetComponent<HexagonPiece>().Row;
             int firstColumn = hexagons[0].GetComponent<HexagonPiece>().Column;
 
-            Debug.Log(firstColumn);
-            Debug.Log(firstRow);
-
             int secondRow = hexagons[1].GetComponent<HexagonPiece>().Row;
             int secondColumn = hexagons[1].GetComponent<HexagonPiece>().Column;
 
-            Debug.Log(secondColumn);
-            Debug.Log(secondRow);
-
             int thirdRow = hexagons[2].GetComponent<HexagonPiece>().Row;
             int thirdColumn = hexagons[2].GetComponent<HexagonPiece>().Column;
-
-            Debug.Log(thirdColumn);
-            Debug.Log(thirdRow);
 
             if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor.Equals(hexagons[0].GetComponent<HexagonPiece>().HexagonColor))
             {
@@ -641,7 +629,6 @@ namespace HexfallClone.GameController
                     {
                         if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn - 1)
                         {
-                            Debug.Log("There is no match 111");
                             isMatched = false;
                             return isMatched;
                         }
@@ -654,7 +641,6 @@ namespace HexfallClone.GameController
                     {
                         if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn + 1)
                         {
-                            Debug.Log("There is no match 222");
                             isMatched = false;
                             return isMatched;
                         }

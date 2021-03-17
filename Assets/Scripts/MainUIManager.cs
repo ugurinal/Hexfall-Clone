@@ -58,7 +58,7 @@ namespace HexfallClone.UISystem
 
             UpdateUI();
 
-            // remove listeners
+            // remove listener
             _menuButton.onClick.RemoveAllListeners();
             _newGameButton.onClick.RemoveAllListeners();
             _backButton.onClick.RemoveAllListeners();
@@ -66,7 +66,7 @@ namespace HexfallClone.UISystem
             _restartButton.onClick.RemoveAllListeners();
             _gameOverExitButton.onClick.RemoveAllListeners();
 
-            // add listeners
+            // add listener
             _menuButton.onClick.AddListener(OpenMenu);
             _newGameButton.onClick.AddListener(LoadNewGame);
             _backButton.onClick.AddListener(CloseMenu);
@@ -109,5 +109,5 @@ namespace HexfallClone.UISystem
             _gameoverPanel.SetActive(true);
             _gameoverAnim.SetTrigger("Gameover");
         }
-    }
-}
+    }   // mainuimanager
+}   // namespace
