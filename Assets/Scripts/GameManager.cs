@@ -381,7 +381,7 @@ namespace HexfallClone.GameController
 
             CheckMatches(); // check if there is match again
 
-            yield return new WaitForSeconds(0.2f);  // wait to check possible matches
+            yield return new WaitForSeconds(0.3f);  // wait to check possible matches
 
             if (!CheckPossibleMatchesWithRaycast())
             {
@@ -494,6 +494,12 @@ namespace HexfallClone.GameController
                         }
                     }
 
+                    List<GameObject> blueHexagons = new List<GameObject>();
+                    List<GameObject> greenHexagons = new List<GameObject>();
+                    List<GameObject> purpleHexagons = new List<GameObject>();
+                    List<GameObject> redHexagons = new List<GameObject>();
+                    List<GameObject> yellowHexagons = new List<GameObject>();
+
                     int blueCounter = 0;
                     int greenCounter = 0;
                     int purpleCounter = 0;
@@ -508,21 +514,26 @@ namespace HexfallClone.GameController
                         {
                             case "Blue":
                                 blueCounter++;
+                                blueHexagons.Add(hits[i].transform.gameObject);
                                 break;
 
                             case "Green":
+                                greenHexagons.Add(hits[i].transform.gameObject);
                                 greenCounter++;
                                 break;
 
                             case "Purple":
+                                purpleHexagons.Add(hits[i].transform.gameObject);
                                 purpleCounter++;
                                 break;
 
                             case "Red":
                                 redCounter++;
+                                redHexagons.Add(hits[i].transform.gameObject);
                                 break;
 
                             case "Yellow":
+                                yellowHexagons.Add(hits[i].transform.gameObject);
                                 yellowCounter++;
                                 break;
 
@@ -532,8 +543,8 @@ namespace HexfallClone.GameController
                         }
                     }
 
-                    // if one of them is three than there is possible match
-                    if (blueCounter >= 3 || greenCounter >= 3 || purpleCounter >= 3 || redCounter >= 3 || yellowCounter >= 3)
+                    // if one of them is four than there is at least one match
+                    if (blueCounter >= 4 || greenCounter >= 4 || purpleCounter >= 4 || redCounter >= 4 || yellowCounter >= 4)
                     {
                         // if there is match activate current hexagon collider than return
                         // we don't need to check rest of them
@@ -541,12 +552,112 @@ namespace HexfallClone.GameController
                         currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                         return foundMatch;
                     }
+
+                    if (blueHexagons.Count == 3)
+                    {
+                        foundMatch = CheckOuterMostHexagons(blueHexagons, currentHexagon);
+                    }
+                    else if (greenHexagons.Count == 3)
+                    {
+                        foundMatch = CheckOuterMostHexagons(greenHexagons, currentHexagon);
+                    }
+                    else if (purpleHexagons.Count == 3)
+                    {
+                        foundMatch = CheckOuterMostHexagons(purpleHexagons, currentHexagon);
+                    }
+                    else if (redHexagons.Count == 3)
+                    {
+                        foundMatch = CheckOuterMostHexagons(redHexagons, currentHexagon);
+                    }
+                    else if (yellowHexagons.Count == 3)
+                    {
+                        foundMatch = CheckOuterMostHexagons(yellowHexagons, currentHexagon);
+                    }
+
+                    if (foundMatch)
+                    {
+                        currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
+                        return foundMatch;
+                    }
+
                     currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                 }
+                Debug.Log("Checking other columns");
             }
 
+            Debug.Log(foundMatch);
             Debug.Log("There is no potential matches.");
             return foundMatch;
+        }
+
+        /// <summary>
+        /// it does not always work but i am out of time so i won't touch this
+        /// it could be better
+        /// </summary>
+        /// <param name="hexagons"></param>
+        /// <param name="currentHexagon"></param>
+        /// <returns></returns>
+        private bool CheckOuterMostHexagons(List<GameObject> hexagons, GameObject currentHexagon)
+        {
+            bool isMatched = true;
+
+            int currentHexagonColumn = currentHexagon.GetComponent<HexagonPiece>().Column;
+            Debug.Log(currentHexagon.transform.name);
+            Debug.Log(currentHexagonColumn);
+
+            int firstRow = hexagons[0].GetComponent<HexagonPiece>().Row;
+            int firstColumn = hexagons[0].GetComponent<HexagonPiece>().Column;
+
+            Debug.Log(firstRow);
+            Debug.Log(firstColumn);
+
+            int secondRow = hexagons[1].GetComponent<HexagonPiece>().Row;
+            int secondColumn = hexagons[1].GetComponent<HexagonPiece>().Column;
+
+            Debug.Log(secondRow);
+            Debug.Log(secondColumn);
+
+            int thirdRow = hexagons[2].GetComponent<HexagonPiece>().Row;
+            int thirdColumn = hexagons[2].GetComponent<HexagonPiece>().Column;
+
+            Debug.Log(thirdRow);
+            Debug.Log(thirdColumn);
+
+            if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor.Equals("Blue"))
+            {
+                // there is atleast one match
+                currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
+                return isMatched;
+            }
+            else
+            {
+                if (currentHexagonColumn % 2 == 0)
+                {
+                    if (firstRow == secondRow + 1 && firstRow == thirdRow + 1)
+                    {
+                        if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn - 1)
+                        {
+                            Debug.Log("There is no match!");
+                            isMatched = false;
+                            return isMatched;
+                        }
+                    }
+                    return isMatched;
+                }
+                else
+                {
+                    if (firstRow == secondRow + 2 && firstRow == thirdRow + 2)
+                    {
+                        if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn + 1)
+                        {
+                            Debug.Log("There is no match!");
+                            isMatched = false;
+                            return isMatched;
+                        }
+                    }
+                    return isMatched;
+                }
+            }
         }
     }   // gamemanager
 }   // namespace
