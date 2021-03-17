@@ -1148,7 +1148,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.7264151, g: 0.39562082, b: 0.18845676, a: 0}
+  m_BackGroundColor: {r: 0.5660378, g: 0.3319362, b: 0.18422927, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1750,7 +1750,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameVariables: {fileID: 11400000, guid: 4e8c805bc5720da4093b3d97f7d522f0, type: 2}
   _hexagoneParent: {fileID: 1385659910}
-  IsGameStarted: 0
 --- !u!1 &1065575055
 GameObject:
   m_ObjectHideFlags: 0
