@@ -593,6 +593,10 @@ namespace HexfallClone.GameController
         /// <summary>
         /// it does not always work but i am out of time so i won't touch this
         /// it could be better
+        /// checks if they are not aligned like below  + = same color * = different color 0 = center
+        /// + * +       * + *
+        /// * 0 *       * 0 *
+        /// * + *       + * +
         /// </summary>
         /// <param name="hexagons"></param>
         /// <param name="currentHexagon"></param>
@@ -608,24 +612,24 @@ namespace HexfallClone.GameController
             int firstRow = hexagons[0].GetComponent<HexagonPiece>().Row;
             int firstColumn = hexagons[0].GetComponent<HexagonPiece>().Column;
 
-            Debug.Log(firstRow);
             Debug.Log(firstColumn);
+            Debug.Log(firstRow);
 
             int secondRow = hexagons[1].GetComponent<HexagonPiece>().Row;
             int secondColumn = hexagons[1].GetComponent<HexagonPiece>().Column;
 
-            Debug.Log(secondRow);
             Debug.Log(secondColumn);
+            Debug.Log(secondRow);
 
             int thirdRow = hexagons[2].GetComponent<HexagonPiece>().Row;
             int thirdColumn = hexagons[2].GetComponent<HexagonPiece>().Column;
 
-            Debug.Log(thirdRow);
             Debug.Log(thirdColumn);
+            Debug.Log(thirdRow);
 
-            if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor.Equals("Blue"))
+            if (currentHexagon.GetComponent<HexagonPiece>().HexagonColor.Equals(hexagons[0].GetComponent<HexagonPiece>().HexagonColor))
             {
-                // there is atleast one match
+                // there is atleast one match if the current hexagon has the same color
                 currentHexagon.GetComponent<PolygonCollider2D>().enabled = true;
                 return isMatched;
             }
@@ -637,7 +641,7 @@ namespace HexfallClone.GameController
                     {
                         if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn - 1)
                         {
-                            Debug.Log("There is no match!");
+                            Debug.Log("There is no match 111");
                             isMatched = false;
                             return isMatched;
                         }
@@ -650,7 +654,7 @@ namespace HexfallClone.GameController
                     {
                         if (firstColumn == secondColumn - 1 && firstColumn == thirdColumn + 1)
                         {
-                            Debug.Log("There is no match!");
+                            Debug.Log("There is no match 222");
                             isMatched = false;
                             return isMatched;
                         }

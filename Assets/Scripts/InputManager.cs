@@ -6,6 +6,8 @@ using HexfallClone.Hexagon;
 
 namespace HexfallClone.PlayerInput
 {
+    #region ENUMS
+
     // for neighbors
     public enum Sides
     {
@@ -24,15 +26,15 @@ namespace HexfallClone.PlayerInput
         Right
     }
 
+    #endregion ENUMS
+
     public class InputManager : MonoBehaviour
     {
-        [SerializeField] private GameVariables _gameVariables;
-        private int _hexagonLayerMask;
+        #region Private Fields
 
+        private int _hexagonLayerMask;
         private GameManager _gameManager;
         private Sides side;
-
-        private GameObject[] _neighbors;
 
         private Touch touch;
         private Vector2 startTouchPos;
@@ -41,6 +43,12 @@ namespace HexfallClone.PlayerInput
 
         private bool isSelected;
         private bool isMatched;
+
+        private GameObject[] _neighbors;
+
+        #endregion Private Fields
+
+        [SerializeField] private GameVariables _gameVariables;
 
         private void Start()
         {
