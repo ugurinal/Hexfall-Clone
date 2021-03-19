@@ -20,7 +20,7 @@ namespace HexfallClone.Hexagon
 
         public int Row { get => _row; set => _row = value; }
         public int Column { get => _column; set => _column = value; }
-        public string HexagonColor { get => _hexagonColor.ToString(); }
+        public string HexagonColor { get => _hexagonColor; set => _hexagonColor = value; }
 
         public float MovementSpeed { get => _movementSpeed; set => _movementSpeed = value; }
 
@@ -28,7 +28,7 @@ namespace HexfallClone.Hexagon
 
         #endregion Public Fields
 
-        [SerializeField] private HexagonColor _hexagonColor;    // to select hexagon color from inspector
+        [SerializeField] private string _hexagonColor;    // to select hexagon color from inspector
 
         private void Awake()
         {

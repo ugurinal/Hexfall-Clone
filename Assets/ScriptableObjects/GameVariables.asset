@@ -16,11 +16,7 @@ MonoBehaviour:
   GridHeight: 9
   GapBetweenHexagones: 0.05
   HexagonPrefabs:
-  - {fileID: 8342543395174524090, guid: 0f78b5c976025634f9be28d2465cc733, type: 3}
-  - {fileID: 8342543395174524090, guid: 00bc16124ba8bdb43bacab1140bc4982, type: 3}
-  - {fileID: 8342543395174524090, guid: 958a0ea88aa2e28408dfd76363b08dc5, type: 3}
-  - {fileID: 8342543395174524090, guid: 747dc5c3c584fec4897d9501486ebe41, type: 3}
-  - {fileID: 8342543395174524090, guid: e848965686b65904b88909543286e5e3, type: 3}
+  - {fileID: 8342543395174524090, guid: 41a688996a8044f4faee969f58ef9a15, type: 3}
   HexagonWidth: 0.889
   HexagonHeight: 0.889
   HexagonMovementSpeed: 20

@@ -15,7 +15,10 @@ namespace HexfallClone.GameController
         Green,
         Red,
         Yellow,
-        Purple
+        Purple,
+        White,
+        Cyan,
+        Grey
     }
 
     public enum GameState
@@ -357,6 +360,7 @@ namespace HexfallClone.GameController
                     {
                         _bombScore = 0;
                         int bombNum = Random.Range(0, _gameVariables.BombPrefabs.Length);
+
                         hexagon = Instantiate(_gameVariables.BombPrefabs[bombNum], initPos, Quaternion.identity, _hexagoneParent);
                         hexagon.GetComponent<BombHexagon>().BombCounter = _gameVariables.BombLife;
                         _bombs.Add(hexagon);
@@ -364,7 +368,12 @@ namespace HexfallClone.GameController
                     else
                     {
                         int hexNum = Random.Range(0, _gameVariables.HexagonPrefabs.Length);
+                        int hexagonColor = Random.Range(0, System.Enum.GetValues(typeof(HexagonColor)).Length);
                         hexagon = Instantiate(_gameVariables.HexagonPrefabs[hexNum], initPos, Quaternion.identity, _hexagoneParent);
+                        hexagon.GetComponent<HexagonPiece>().HexagonColor = ((HexagonColor)hexagonColor).ToString();
+                        Color color;
+                        ColorUtility.TryParseHtmlString(hexagon.GetComponent<HexagonPiece>().HexagonColor, out color);
+                        hexagon.GetComponent<SpriteRenderer>().color = color;
                     }
 
                     _hexagones[column, _gameVariables.GridHeight - row - 1] = hexagon;
